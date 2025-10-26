@@ -1,0 +1,28 @@
+# Étape 1 : build avec Maven + JDK 21 (Amazon Corretto)
+FROM amazoncorretto:21-alpine3.19 AS builder
+
+# Installer Maven
+RUN apk add --no-cache maven
+
+WORKDIR /build
+
+# 🧩 Copie du pom parent (backend) + modules nécessaires
+COPY pom.xml .
+COPY common ./common
+COPY auth-service ./auth-service
+
+# 🧠 Installer d'abord le parent dans le repo Maven local
+RUN mvn -N install
+
+# 📦 Installer le module commun
+RUN mvn -f common/pom.xml clean install -DskipTests
+
+# ⚙️ Compiler le service d’authentification
+RUN mvn -f auth-service/pom.xml clean package -DskipTests
+
+# Étape 2 : image finale allégée
+FROM amazoncorretto:21-alpine3.19
+WORKDIR /app
+COPY --from=builder /build/auth-service/target/*.jar app.jar
+EXPOSE 8081
+ENTRYPOINT ["java", "-jar", "app.jar"]

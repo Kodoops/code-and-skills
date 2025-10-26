@@ -1,0 +1,39 @@
+server:
+  port: 9090
+
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false # ✅ désactive Eureka pour les tests
+      routes:
+        - id: auth-service
+          uri: http://localhost:8081 # ✅ vers ton Auth-Service réel
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=1
+
+        - id: catalog-service
+          uri: http://localhost:8082 # ✅ vers ton Catalog-Service réel
+          predicates:
+            - Path=/api/courses/**
+          filters:
+            - StripPrefix=1
+eureka:
+  client:
+    enabled: false
+
+jwt:
+  public-paths:
+    - /auth/login
+    - /auth/register
+    - /auth/verify
+    - /auth/refresh
+    - /auth/forgot-password
+    - /auth/reset-password

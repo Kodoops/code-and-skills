@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: ${APPLICATION_SERVICE_NAME:discovery-service}
+  cloud:
+    config:
+      enabled: false
+  config:
+    import: "optional:configserver:"
+
+server:
+  port: ${SERVER_PORT:8761}
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"   # health,info,metrics
+  endpoint:
+    health:
+      show-details: always # when_authorized
+  health:
+    mail:
+      enabled: false

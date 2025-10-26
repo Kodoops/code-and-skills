@@ -1,0 +1,97 @@
+#datasource:
+#  url: jdbc:h2:mem:testdb
+#  driver-class-name: org.h2.Driver
+#  username: sa
+#  password:
+#jpa:
+#  hibernate:
+#    ddl-auto: create-drop
+#  properties:
+#    hibernate:
+#      dialect: org.hibernate.dialect.H2Dialect
+
+spring:
+  config:
+#    activate:
+#      on-profile: docker
+    import: "optional:configserver:"
+
+  application:
+    name: ${APPLICATION_SERVICE_NAME:auth-service}
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+        jdbc.lob.non_contextual_creation: true
+        temp.use_jdbc_metadata_defaults: false
+        globally_quoted_identifiers: true
+
+  devtools:
+    restart:
+      enabled: true
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092 }
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+server:
+  port: ${SERVER_PORT:8081}
+  error:
+    include-message: always
+
+jwt:
+  secret:
+    current: ${JWT_SECRET_CURRENT:b06aa53d8b9e4c1f9a78b0a1a6ffb7cf1b6c1d99b64a22a7c321f9089cf32aa4}
+    previous: ${JWT_SECRET_PREVIOUS:7f98bb23f7f3d5d4c78aa81a03aa46bc993b1b7b72e671b3c4f3c7655bc6219a }
+  expiration: ${JWT_EXPIRATION:3600000 }   # 1h
+  refresh:
+    expiration: ${JWT_REFRESH_EXPIRATION:604800000 } # 7 jours
+
+gateway:
+  trust:
+    secret: ${GATEWAY_TRUST_SECRET:s3cr3t_gateway_trust_key_123!}
+
+internal:
+  secret: ${INTERNAL_SECRET:internal-service-secret-key}
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"   # health,info,metrics
+  endpoint:
+    health:
+      show-details: always # when_authorized
+  health:
+    mail:
+      enabled: false
+
+front:
+  base-url: ${APP_FRONTEND_URL:http://localhost:3000 }
+
+app:
+  frontendUrl: ${APP_FRONTEND_URL:http://localhost:3000 }
+  name: ${APP_NAME:CodeAndSkills.com}

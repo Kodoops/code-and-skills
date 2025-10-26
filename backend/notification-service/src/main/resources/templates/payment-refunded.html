@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Remboursement effectué</title>
+</head>
+<body>
+<div class="container">
+    <h2>Bonjour <span th:text="${userName}">Utilisateur</span> 💸</h2>
+    <p>Votre paiement de <strong th:text="${amount}"></strong> <span th:text="${currency}"></span> a été remboursé.</p>
+    <p>Raison : <span th:text="${reason}">Remboursement de commande</span></p>
+</div>
+</body>
+</html>

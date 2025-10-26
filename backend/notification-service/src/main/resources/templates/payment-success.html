@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Paiement confirmé</title>
+</head>
+<body>
+<div class="container">
+    <h2>Bonjour <span th:text="${userName}">Utilisateur</span> 👋</h2>
+    <p>Nous confirmons la réception de votre paiement de
+        <strong th:text="${amount}"></strong>
+        <span th:text="${currency}"></span>.</p>
+    <p>Merci pour votre confiance !</p>
+    <p><a th:href="${receiptUrl}" target="_blank">Voir le reçu de paiement</a></p>
+</div>
+</body>
+</html>

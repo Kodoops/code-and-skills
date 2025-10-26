@@ -1,0 +1,180 @@
+
+gateway:
+  trust:
+    secret: ${GATEWAY_TRUST_SECRET:s3cr3t_gateway_trust_key_123!}
+  session:
+    status-url: lb://auth-service/internal/sessions/{sessionId}/status
+
+internal:
+  secret: ${INTERNAL_SECRET:internal-service-secret-key}
+
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: ${APPLICATION_SERVICE_NAME:gateway-service}
+  data:
+    redis:
+      host: ${DATA_REDIS_HOST:localhost}
+      port: ${DATA_REDIS_PORT:6379}
+  config:
+    import: "optional:configserver:"
+
+  cloud:
+    config:
+      enabled: false
+
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+        - PreserveHostHeader
+      httpclient:
+        wiretap: true
+      filter:
+        remove-hop-by-hop: false
+      forwarded:
+        enabled: true
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=1
+          metadata:
+            sensitive-headers: [ ]
+
+        - id: auth-internal
+          uri: lb://auth-service
+          predicates:
+            - Path=/internal/**
+
+        - id: user-profile-service
+          uri: lb://user-profile-service
+          predicates:
+            - Path=/api/profiles/**
+          filters:
+            - StripPrefix=1
+          metadata:
+            sensitive-headers: [ ]
+
+        - id: catalog-service
+          uri: lb://catalog-service
+          predicates:
+            - Path=/api/catalog/**
+          filters:
+            - StripPrefix=1
+          metadata:
+            sensitive-headers: [ ]
+
+        - id: billing-service
+          uri: lb://billing-service
+          predicates:
+            - Path=/api/billing/**
+          filters:
+            - StripPrefix=1
+          metadata:
+            sensitive-headers: [ ]
+
+        - id: learning-analytics-service
+          uri: lb://learning-analytics-service
+          predicates:
+            - Path=/api/learning-analytics/**
+          filters:
+            - StripPrefix=1
+          metadata:
+            sensitive-headers: [ ]
+
+  # CORS simple
+  webflux:
+    cors:
+      mappings:
+        "[/**]":
+          allowedOrigins: "*"
+          allowedMethods: "*"
+          allowedHeaders: "*"
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    whitelabel:
+      enabled: false
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics,loggers,gateway"
+  endpoint:
+    health:
+      show-details: always # when_authorized
+  health:
+    mail:
+      enabled: false
+
+# ====== Sécurité JWT côté gateway ======
+jwt:
+  secret:
+    current: ${JWT_SECRET_CURRENT:b06aa53d8b9e4c1f9a78b0a1a6ffb7cf1b6c1d99b64a22a7c321f9089cf32aa4}
+    previous: ${JWT_SECRET_PREVIOUS:7f98bb23f7f3d5d4c78aa81a03aa46bc993b1b7b72e671b3c4f3c7655bc6219a }
+  expiration: ${JWT_EXPIRATION:3600000 }   # 1h
+  refresh:
+    expiration: ${JWT_REFRESH_EXPIRATION:604800000 } # 7 jours
+  public-paths:
+    # variantes /api/*
+    - /api/auth/login
+    - /api/auth/register
+    - /api/auth/verify
+    - /api/auth/refresh
+    - /api/auth/forgot-password
+    - /api/auth/reset-password
+    - /api/actuator/**
+
+    # Billing  publics (ajout important)
+    - /api/billing/customers/ensure
+    - /api/billing/webhook
+
+    # Profile User publics (ajout important)
+    - /api/profiles/user/public
+    - /api/profiles/user/*/stripe-customer
+
+    # Catalog publics (ajout important)
+    - /api/catalog/public/**
+    - /catalog/public/**
+#      - /api/catalog/courses
+#      - /api/catalog/courses/**
+#      - /api/catalog/domains
+#      - /api/catalog/categories
+
+    # variantes sans /api (après StripPrefix)
+    - /auth/login
+    - /auth/register
+    - /auth/verify
+    - /auth/refresh
+    - /auth/forgot-password
+    - /auth/reset-password
+    - /actuator/**
+    - /profiles/user/public
+    - /profiles/user/*/stripe-customer
+    - /billing/customers/ensure
+    - /billing/webhook
+
+
+logging:
+  level:
+    org.springframework.cloud.gateway.filter.ratelimit: DEBUG

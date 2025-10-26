@@ -1,0 +1,210 @@
+services:
+
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
+  #   INFRASTRUCTURE
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
+
+  # 🗄️ Base de données PostgreSQL
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: codeandskills
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - codeandskills-net
+
+  # 🧰 Interface d'administration PostgreSQL
+  pgadmin:
+    image: dpage/pgadmin4:8.8
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@codeandskills.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - codeandskills-net
+
+  # 📬 Serveur SMTP de développement
+  smtp4dev:
+    image: rnwood/smtp4dev:v3
+    container_name: smtp4dev
+    restart: always
+    ports:
+      - "1080:80"   # interface web
+      - "2525:25"   # port SMTP
+    networks:
+      - codeandskills-net
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: [ "redis-server", "--save", "60", "1", "--loglevel", "warning" ]
+    volumes:
+      - redis_data:/data
+    networks:
+      - codeandskills-net
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis-insight
+    restart: unless-stopped
+    ports:
+      - "5540:5540"
+    networks:
+      - codeandskills-net
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
+  #  MICROSERVICES
+  # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
+
+  discovery-service:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile.discovery
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:8761" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - codeandskills-net
+    # monter le code source directement
+    volumes:
+      - ./backend/discovery-service:/app/discovery-service
+      - ./backend/common:/app/common
+      - ~/.m2:/root/.m2   # ✅ ce volume permet d’utiliser ton repo Maven local
+
+#  gateway:
+#    build:
+#      context: ./backend
+#      dockerfile: docker/Dockerfile.gateway
+#    container_name: gateway
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#    depends_on:
+#      discovery-service:
+#        condition: service_healthy
+##      - courses-service
+#    networks:
+#      - codeandskills-net
+#    # monter le code source directement
+#    volumes:
+#      - ./backend/gateway-service:/app/gateway-service
+#      - ./backend/common:/app/common
+#      - ~/.m2:/root/.m2   # ✅ ce volume permet d’utiliser ton repo Maven local
+#
+#  auth-service:
+#    #platform: linux/amd64        # ← ajoute cette ligne pour faire  Forcer la plateforme x86_64 pour java 21   eclipse-temurin:21-jdk
+#    build:
+#      context: ./backend
+#      dockerfile: docker/Dockerfile.auth
+#    container_name: auth-service
+#    environment:
+#      SPRING_PROFILES_ACTIVE: docker
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/codeandskills
+#      SPRING_DATASOURCE_USERNAME: postgres
+#      SPRING_DATASOURCE_PASSWORD: postgres
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#      SPRING_MAIL_HOST: smtp4dev
+#      SPRING_MAIL_PORT: 25
+#      SPRING_MAIL_USERNAME: ""
+#      SPRING_MAIL_PASSWORD: ""
+#    ports:
+#      - "8081:8081"
+#    depends_on:
+#      discovery-service:
+#        condition: service_healthy
+#      postgres:
+#        condition: service_started
+#      smtp4dev:
+#        condition: service_started
+#    networks:
+#      - codeandskills-net
+#    # monter le code source directement
+#    volumes:
+#      - ./backend/auth-service:/app/auth-service
+#      - ./backend/common:/app/common
+#      - ~/.m2:/root/.m2   # ✅ ce volume permet d’utiliser ton repo Maven local
+#      -
+#
+#
+## >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
+##   FRONTEND : UI
+## >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../backend/docker/Dockerfile.frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://gateway:8080
+    #depends_on:
+     # - gateway
+    networks:
+      - codeandskills-net
+      # monter le code source directement
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
+#   VOLUMES
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
+
+volumes:
+  pgdata:
+  redis_data: {}
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
+#   NETWORKS
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
+
+networks:
+  codeandskills-net:
+    name: codeandskills-net
+    driver: bridge
