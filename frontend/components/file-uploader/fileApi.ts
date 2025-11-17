@@ -58,7 +58,7 @@ export interface UploadFileParams {
 const FILE_SERVICE_BASE = "/files/user";
 
 // 1️⃣ Appel à FILE_SERVICE_BASE/presign-upload
-export async function apiPresignUpload(payload: PresignUploadPayload): Promise<TypeResponse<PresignUploadResponse>> {
+export async function apiPresignUpload(payload: PresignUploadPayload): Promise<TypeResponse<PresignUploadResponse>>{
     try{
         const client = await AxiosServerClient();
         const res = await client.post<ApiResponse<PresignUploadResponse>>(
