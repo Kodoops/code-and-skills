@@ -13,3 +13,5 @@ target/
 .vscode/
 logs/
 pgdata/
+
+replacements.txt
