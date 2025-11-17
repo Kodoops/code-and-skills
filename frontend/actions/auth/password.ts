@@ -1,8 +1,8 @@
 "use server";
 
 import { AxiosServerClient } from "@/lib/axiosServerClient";
-import { ResponseType } from "@/models";
 import { handleAxiosError } from "@/lib/handleAxiosError";
+import {TypeResponse} from "@/lib/types";
 
 
 /**
@@ -12,7 +12,7 @@ import { handleAxiosError } from "@/lib/handleAxiosError";
 export async function changePasswordAction(values: {
     oldPassword: string;
     newPassword: string;
-}): Promise<ResponseType<null>> {
+}): Promise<TypeResponse<null>> {
 
     try {
         const client = await AxiosServerClient();

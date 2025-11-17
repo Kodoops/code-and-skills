@@ -54,4 +54,12 @@ public class GatewayAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String p = request.getRequestURI();
+        // skip complet pour la route publique
+        return (request.getMethod().equalsIgnoreCase("POST") && "/profiles/public".equals(p))
+                || p.startsWith("/actuator/");
+    }
 }

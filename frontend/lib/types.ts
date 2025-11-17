@@ -84,4 +84,3 @@ export const levels = [
     {label: "Expert", value: "Expert"},
 ];
 
-export type UploaderFileType = "image" | "video" | "file";

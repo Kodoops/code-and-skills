@@ -1,7 +1,9 @@
 package com.codeandskills.catalog_service.infrastructure.web.controller;
 
 import com.codeandskills.catalog_service.application.dto.CourseDTO;
+import com.codeandskills.catalog_service.application.dto.CourseLessonCounts;
 import com.codeandskills.catalog_service.application.service.CourseService;
+import com.codeandskills.catalog_service.domain.model.CourseStatus;
 import com.codeandskills.catalog_service.infrastructure.web.dto.ListCourseIdsRequest;
 import com.codeandskills.common.response.ApiResponse;
 import com.codeandskills.common.response.PagedResponse;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/catalog/public/courses")
@@ -46,6 +49,16 @@ public class PublicCourseController {
     ) {
         List<CourseDTO> recentCourses = service.getRecentCourses(limit, publishedOnly);
         return ResponseEntity.ok(ApiResponse.success(200, "Recent courses fetched successfully", recentCourses));
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<ApiResponse<Map<String, Long>>> countCourses(
+            @RequestParam(required = false) CourseStatus status
+    ) {
+        //long count = service.countCourses(status);
+        CourseLessonCounts countsByStatus = service.getCountsByStatus(status);
+        return ResponseEntity.ok(ApiResponse.success(200, "Courses counted successfully",
+                Map.of("courses", countsByStatus.getCourses(), "lessons", countsByStatus.getLessons())));
     }
 
     @GetMapping("/{slug}")

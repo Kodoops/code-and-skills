@@ -9,6 +9,7 @@ import {toast} from "sonner";
 import {useParams, useRouter} from "next/navigation";
 import {Loader2, Trash2} from "lucide-react";
 import {adminDeleteCategory} from "@/actions/admin/categories";
+import {handleActionResult} from "@/lib/handleActionResult";
 
 const AdminDeleteCategoryPage = () => {
 
@@ -18,32 +19,17 @@ const AdminDeleteCategoryPage = () => {
 
     function onSubmit() {
         startTransition(async () => {
-            const {data: result, error} = await tryCatch(adminDeleteCategory(categoryId));
+            const result = await adminDeleteCategory(categoryId);
 
-            if (error) {
-                toast.error(error.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        color: "#991B1B",
-                    },
-                });
-            }
-            if (result?.status === "success") {
-                toast.success(result?.message, {
-                    style: {
-                        background: "#D1FAE5",
-                        color: "#065F46",
-                    },
-                });
-                router.push("/admin/categories");
-            } else {
-                toast.error(result?.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        color: "#991B1B",
-                    },
-                });
-            }
+            handleActionResult(result, {
+                onSuccess: () => {
+                    console.log("✅ Catégorie supprimée !");
+                    router.push("/admin/categories");
+                },
+                onError: (message) => {
+                    console.warn("❌ Erreur:", message);
+                },
+            });
         });
     }
 

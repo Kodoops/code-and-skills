@@ -1,11 +1,10 @@
 "use server";
 
-import {Course, Enrollment, UserProfile} from "@/models";
+import {Course} from "@/models";
 import {AxiosServerClient} from "@/lib/axiosServerClient";
 import {handleAxiosError} from "@/lib/handleAxiosError";
-import {requireUser} from "@/actions/auth/requireUser";
 import {COURSES_PER_PAGE} from "@/constants/user-contants";
-import {ApiResponse, PagedResponse, PaginationResponse, TypeResponse} from "@/lib/types";
+import {ApiResponse, PagedResponse, TypeResponse} from "@/lib/types";
 
 
 /**
@@ -124,3 +123,5 @@ export async function adminGetCourseBySlug(
         return handleAxiosError<Course>(error, "Erreur lors de la récupération du cours");
     }
 }
+
+

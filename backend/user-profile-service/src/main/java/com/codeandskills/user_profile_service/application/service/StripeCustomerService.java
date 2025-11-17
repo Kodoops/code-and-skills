@@ -6,11 +6,13 @@ import com.stripe.Stripe;
 import com.stripe.model.Customer;
 import com.stripe.param.CustomerCreateParams;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StripeCustomerService {
 
     private final UserProfileRepository userProfileRepository;

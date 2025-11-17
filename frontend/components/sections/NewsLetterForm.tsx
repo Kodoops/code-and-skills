@@ -8,13 +8,15 @@ import {useTransition} from "react";
 import {type Resolver, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormField, FormItem, FormLabel, FormControl, FormMessage} from "@/components/ui/form";
-import {toast} from "sonner";
 import { newsletterSchema, NewsletterSchema} from "@/lib/db/zodSchemas";
-import {tryCatch} from "@/hooks/try-catch";
 import {subscribeToNewsletter} from "@/actions/newsletter";
+import {handleActionResult} from "@/lib/handleActionResult";
+import {useRouter} from "next/navigation";
 
 export default function NewsLetterForm() {
     const [isPending, startTransition] = useTransition();
+
+    const router = useRouter();
 
     const form = useForm<NewsletterSchema>({
         resolver: zodResolver(newsletterSchema) as Resolver<NewsletterSchema>,
@@ -23,32 +25,18 @@ export default function NewsLetterForm() {
 
     function onSubmit(values: NewsletterSchema) {
         startTransition(async () => {
-            const {data: result, error} = await tryCatch(subscribeToNewsletter(values));
+            const result = await subscribeToNewsletter(values);
 
-            if (error) {
-                toast.error(error.message,{
-                    style: {
-                        background: "#FEE2E2",
-                        color: "#991B1B",
-                    },
-                });
-            }
-            if (result?.status === "success") {
-                toast.success(result?.message,  {
-                    style: {
-                        background: "#D1FAE5",
-                        color: "#065F46",
-                    },
-                });
-                form.reset();
-            } else {
-                toast.error(result?.message,{
-                    style: {
-                        background: "#FEE2E2",
-                        color: "#991B1B",
-                    },
-                });
-            }
+            handleActionResult(result, {
+                onSuccess: () => {
+                    console.log("✅ Inscription a la newsletter confirmée !");
+                    form.reset();
+                    router.push("/");
+                },
+                onError: (message) => {
+                    console.warn("❌ Erreur:", message);
+                },
+            });
         })
     }
 

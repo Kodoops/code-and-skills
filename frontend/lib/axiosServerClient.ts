@@ -7,6 +7,7 @@ import {refreshTokenAction} from "@/actions/auth/auth";
  * avec le token JWT automatiquement ajouté s'il existe.
  */
 export const AxiosServerClient = async () => {
+
     const cookieStore = await cookies();
     const token = cookieStore.get("auth_token")?.value;
 
@@ -34,7 +35,7 @@ export const AxiosServerClient = async () => {
                     return axios(originalRequest);
                 }
 
-                return Promise.reject({ sessionExpired: true });
+              //  return Promise.reject({ sessionExpired: true });
             }
 
             return Promise.reject(error);

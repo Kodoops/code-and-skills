@@ -10,7 +10,7 @@ interface Props {
 
 const SectionTitle = ({title, children,titleStyle, subTitle}:Props) => {
     return (
-        <div className="mb-8 text-center ">
+        <div className="mb-8 text-center  flex-1">
             <h2 className={cn("text-2xl font-bold flex flex-col items-center", titleStyle)}>
                 <span>{title}</span> {children}
             </h2>

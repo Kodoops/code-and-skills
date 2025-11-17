@@ -29,7 +29,13 @@ public class GatewaySignatureFilter extends OncePerRequestFilter {
         String email = request.getHeader("X-User-Email");
         String sessionId = request.getHeader("X-Session-Id");
         String signature = request.getHeader("X-Gateway-Signature");
+        String uri = request.getRequestURI();
 
+        // ✅ Si la route est publique → pas besoin des autres headers
+        if ( uri.startsWith("/profiles/public") ) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if ( signature == null) {// userId == null || sessionId == null ||
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing gateway headers");

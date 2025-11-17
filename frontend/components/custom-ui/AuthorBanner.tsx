@@ -18,9 +18,11 @@ const AuthorBanner = ({name, title,description, rating, avatar  }:Props) => {
                 <div  className=" bg-muted-foreground/10 rounded-full border-2 p-0.5 ">
                     <Image src={avatar} alt={"avatar" + name} width={64} height={64} className="rounded-full  "/>
                 </div>
-                : <UserSVG/>}
-            <div className="">
-                <p className={"font-semibold text-primary"}>{name}
+                : <div  className=" bg-muted-foreground/10 rounded-full border-2 p-0.5 ">
+                    <UserSVG/>
+                </div>}
+                    <div className="">
+                        <p className={"font-semibold text-primary"}>{name}
                     {title && <span className={"text-sm italic text-muted-foreground"}> - {title}</span>}
                 </p>
                 {description && <p className={"text-sm italic text-muted-foreground"}>{description}</p>}

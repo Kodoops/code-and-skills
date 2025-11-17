@@ -1,6 +1,7 @@
 package com.codeandskills.catalog_service.application.service;
 
 import com.codeandskills.catalog_service.application.dto.CourseDTO;
+import com.codeandskills.catalog_service.application.dto.CourseLessonCounts;
 import com.codeandskills.catalog_service.application.dto.UserProfileDTO;
 import com.codeandskills.catalog_service.application.mapper.CourseMapper;
 import com.codeandskills.catalog_service.domain.model.Course;
@@ -15,6 +16,7 @@ import com.codeandskills.common.events.catalog.CourseCreatedEvent;
 import com.codeandskills.catalog_service.infrastructure.kafka.CourseEventProducer;
 import com.codeandskills.common.events.catalog.CoursePublishedEvent;
 import com.codeandskills.common.response.PagedResponse;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -104,11 +106,13 @@ public class CourseService {
 
         // 🔹 Récupère les infos de l'utilisateur (microservice user)
         try {
-            dto.setUser(userProfileClient.getUserProfileById(new GetPublicUserProfile(course.getUserId())));
+            UserProfileDTO userProfileById = userProfileClient.getUserProfileById(new GetPublicUserProfile(course.getUserId()));
+            dto.setUser(userProfileById);
         } catch (Exception e) {
             log.info(e.getMessage(), e);
             dto.setUser(null);
         }
+
         return dto;
     }
 
@@ -299,5 +303,13 @@ public class CourseService {
                 .stream()
                 .map(mapper::toDto)
                 .toList();
+    }
+
+    public long countCourses(CourseStatus status) {
+        return courseRepository.countByOptionalStatus(status);
+    }
+
+    public CourseLessonCounts getCountsByStatus(@Nullable CourseStatus status) {
+        return courseRepository.countCoursesAndLessonsByStatus(status);
     }
 }

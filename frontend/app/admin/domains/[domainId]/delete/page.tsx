@@ -4,11 +4,10 @@ import React, {useTransition} from 'react';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import Link from "next/link";
 import {Button, buttonVariants} from '@/components/ui/button';
-import {tryCatch} from "@/hooks/try-catch";
-import {toast} from "sonner";
 import {useParams, useRouter} from "next/navigation";
 import {Loader2, Trash2} from "lucide-react";
 import {adminDeleteDomain} from "@/actions/admin/domain";
+import {handleActionResult} from "@/lib/handleActionResult";
 
 const AdminDeleteDomain = () => {
 
@@ -18,32 +17,17 @@ const AdminDeleteDomain = () => {
 
     function onSubmit() {
         startTransition(async () => {
-            const {data: result, error} = await tryCatch(adminDeleteDomain(domainId));
+            const result = await adminDeleteDomain(domainId);
 
-            if (error) {
-                toast.error(error.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        border: "1px solid #EF4444",
-                    },
-                });
-            }
-            if (result?.status === "success") {
-                toast.success(result?.message, {
-                    style: {
-                        background: "#D1FAE5",
-                        color: "#065F46",
-                    },
-                });
-                router.push("/admin/domains");
-            } else {
-                toast.error(result?.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        border: "1px solid #EF4444",
-                    },
-                });
-            }
+            handleActionResult(result, {
+                onSuccess: () => {
+                    console.log("✅ Domaine supprimé !");
+                    router.push("/admin/domains");
+                },
+                onError: (message) => {
+                    console.warn("❌ Erreur:", message);
+                },
+            });
         });
     }
 

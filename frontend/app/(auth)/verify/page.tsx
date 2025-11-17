@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import {verifyAccountAction} from "@/actions/auth/auth";
+import {handleActionResult} from "@/lib/handleActionResult";
 
 export default function VerifyAccountPage() {
     const params = useSearchParams();
@@ -21,23 +22,16 @@ export default function VerifyAccountPage() {
         startTransition(async () => {
             const result = await verifyAccountAction(token);
 
-            if (!result.success) {
-                toast.error(result.message,{
-                    style: {
-                        background: "#FEE2E2",
-                        color: "#991B1B",
-                    },
-                });
-                return;
-            }
-
-            toast.success(result.message,  {
-                style: {
-                    background: "#D1FAE5",
-                    color: "#065F46",
+            handleActionResult(result, {
+                onSuccess: () => {
+                    console.log("✅ account verified !");
+                    setTimeout(() => router.push("/login"), 1500);
+                },
+                onError: (message) => {
+                    console.warn("❌ Erreur:", message);
                 },
             });
-            setTimeout(() => router.push("/login"), 1500);
+
         });
     }, [token]);
 

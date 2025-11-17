@@ -5,13 +5,14 @@ import AppLogoShape from "@/components/custom-ui/AppLogoShape";
 import NavContent from "@/app/(root)/_components/NavContent";
 import {CompanySocialLinks} from "@/app/(root)/_components/CompanySocialLinks";
 import AppLogoText from "@/components/custom-ui/AppLogoText";
-import {getCompanySocialLinks} from "@/actions/company";
 import {getPageLinks} from "@/actions/page";
 import {CompanySocialLink, Page} from "@/models";
+import {getCompanySocialLinks} from "@/actions/public/social-networks";
 
 const Footer = async () => {
 
-    const socials : CompanySocialLink [] = await getCompanySocialLinks();
+    const response = await getCompanySocialLinks();
+    const socials: CompanySocialLink[] = response.data ? response.data : [];
     const links: Page[] = await getPageLinks("Footer");
 
     return (

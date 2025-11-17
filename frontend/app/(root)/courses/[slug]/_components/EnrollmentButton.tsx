@@ -17,12 +17,14 @@ export function EnrollmentButton  ({courseId, btnLabel, btnVariant, price, cours
     const router = useRouter();
 
     function onSubmit() {
+
         startTransition(async () => {
             if(!user) {
                 router.push("/login");
                 return;
             }
             // 1) s'assurer d’avoir un stripeCustomerId
+
             const sc = await ensureStripeCustomer(user?.userId as string);
             if (sc.status === "error" || !sc.data?.stripeCustomerId) {
                 toast.error(sc.message);
@@ -30,7 +32,7 @@ export function EnrollmentButton  ({courseId, btnLabel, btnVariant, price, cours
             }
             // 2) créer la session checkout
             const resp = await startCourseCheckout({
-                userId : user?.id as string,
+                userId : user?.userId as string,
                 email: user?.email as string,
                 courseId,
                 courseTitle: courseTitle,

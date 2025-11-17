@@ -82,11 +82,17 @@ export const changePasswordSchema = z
 
 export const updateProfileSchema = z.object({
     firstname: z.string().min(2, "Le prénom doit contenir au moins 2 caractères."),
+    email: z
+        .string()
+        .trim()
+        .toLowerCase()
+        .email({ message: "Adresse e-mail invalide" }),
     lastname: z.string().min(2, "Le nom doit contenir au moins 2 caractères."),
     bio: z.string().max(300, "La bio ne peut pas dépasser 300 caractères.").nullable().optional(),
+    title: z.string().nullable().optional(),
     country: z.string().nullable().optional(),
     city: z.string().nullable().optional(),
-    avatarUrl: z.string().url("URL invalide").nullable().optional(),
+    avatarUrl: z.string().nullable().optional(),
 });
 
 

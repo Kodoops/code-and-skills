@@ -61,5 +61,5 @@ export function useSession() {
         }
     };
 
-    return { user, loading, authenticated: !!user,  logout };
+    return { user, loading, authenticated: !!user,  logout, isAdmin: user?.role === "ADMIN" };
 }

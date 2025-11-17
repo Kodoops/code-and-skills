@@ -18,6 +18,8 @@ public class UserProfile  extends BaseEntity{
     private String lastname;
     private String email;
     private String avatarUrl;
+    private String title;
+    @Column(length = 2000)
     private String bio;
     private String country;
     private String city;
@@ -38,18 +40,4 @@ public class UserProfile  extends BaseEntity{
         this.email = email;
     }
 
-    public UserProfile(String id, String firstname, String lastname, String email, String avatarUrl, String bio,
-                       String country, String city, boolean isPremium, LocalDateTime lastLoginAt) {
-        super();
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.userId = id;
-        this.email = email;
-        this.avatarUrl = avatarUrl;
-        this.bio = bio;
-        this.country = country;
-        this.city = city;
-        this.isPremium = isPremium;
-        this.lastLoginAt = lastLoginAt;
-    }
 }

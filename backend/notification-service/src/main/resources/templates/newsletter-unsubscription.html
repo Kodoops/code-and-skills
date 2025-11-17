@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Confirmation de la désinscription a la newsletter </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #2c3e50;
+        }
+
+        a.button {
+            display: inline-block;
+            background-color: #1d72b8;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Bonjour <span th:text="${userName}">Utilisateur</span> 👋</h2>
+    <p>Nous vous confirmons que votre inscription a été retirée de notre newsletter de <strong>CodeAndSkills</strong>.</p>
+    <p>Pour toutes informations ou modifications merci de vous rendre sur votre espace :</p>
+    <p>
+        <a class="button" th:href="${profileLink}" target="_blank">Mon espace</a>
+    </p>
+
+    <hr/>
+
+    <small>Si vous n'êtes pas à l'origine de cette demande, ignorez simplement ce message.</small>
+</div>
+</body>
+</html>

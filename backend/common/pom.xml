@@ -13,12 +13,6 @@
 	<artifactId>common</artifactId>
 	<packaging>jar</packaging>
 
-	<properties>
-		<java.version>21</java.version>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
-	</properties>
-
 	<dependencies>
 		<!-- Spring core minimal -->
 		<dependency>
@@ -30,7 +24,7 @@
 		<dependency>
 			<groupId>com.auth0</groupId>
 			<artifactId>java-jwt</artifactId>
-			<version>4.4.0</version>
+			<version>${jwt.auth0.version}</version>
 		</dependency>
 
 		<!-- Lombok (facultatif mais pratique) -->
@@ -44,14 +38,14 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>2.0.17</version>
+			<version>${slf4j-api.version}</version>
 		</dependency>
 
 		<!-- (Optionnel, pour les tests ou si tu veux une implémentation console simple) -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.5.18</version>
+			<version>${logback-classic.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 

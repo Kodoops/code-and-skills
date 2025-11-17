@@ -18,7 +18,9 @@ export function useCourseProgress({ courseData }: { courseData: Course }): Cours
 
     useEffect(() => {
         async function fetchProgress() {
+
             const res = await getCourseProgress(courseData.id);
+            console.log("res", res);
             if (res.status === "success" && Array.isArray(res.data) ) {
                 const completed = res.data
                     .filter((p: any) => p.completed)
@@ -26,7 +28,7 @@ export function useCourseProgress({ courseData }: { courseData: Course }): Cours
 
                 setCompletedLessonIds([...completed]);
 
-                const totalLessons = courseData.chapters.flatMap((c) => c.lessons).length;
+                const totalLessons =courseData.chapters && courseData.chapters.flatMap((c) => c.lessons).length;
                 setProgressPercentage((completed.length / totalLessons) * 100);
             }
         }
@@ -35,7 +37,7 @@ export function useCourseProgress({ courseData }: { courseData: Course }): Cours
     }, [courseData.id, reloadFlag]);
 
     return {
-        totalLessons: courseData.chapters.flatMap((c) => c.lessons).length,
+        totalLessons: courseData.chapters && courseData.chapters.flatMap((c) => c.lessons).length,
         completedLessons: completedLessonIds.length,
         completedLessonIds,
         progressPercentage,

@@ -16,8 +16,10 @@ import {notFound, useRouter} from "next/navigation";
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import slugify from 'slugify';
-import {Domain, iconLibs, listColors} from "@/models";
+import {Domain} from "@/models";
 import {adminUpdateDomain} from "@/actions/admin/domain";
+import {iconLibs, listColors} from "@/lib/types";
+import {handleActionResult} from "@/lib/handleActionResult";
 
 interface EditDomainFormProps {
     data   : Domain
@@ -43,33 +45,17 @@ const EditDomainForm = ({data}:EditDomainFormProps) => {
 
     function onSubmit(values: DomainSchema) {
         startTransition(async () => {
-            const {data:result , error} = await tryCatch(adminUpdateDomain( data!.id, values));
+            const result = await adminUpdateDomain( data!.id, values);
 
-            if (error) {
-                toast.error(error.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        border: "1px solid #EF4444",
-                    },
-                });
-            }
-            if (result?.status === "success") {
-                toast.success(result?.message, {
-                    style: {
-                        background: "#D1FAE5",
-                        color: "#065F46",
-                    },
-                });
-                form.reset();
-                router.push("/admin/domains");
-            }else{
-                toast.error(result?.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        border: "1px solid #EF4444",
-                    },
-                });
-            }
+            handleActionResult(result, {
+                onSuccess: () => {
+                    console.log("✅ Domaine mis à jour !");
+                    router.push("/admin/domains");
+                },
+                onError: (message) => {
+                    console.warn("❌ Erreur:", message);
+                },
+            });
         })
     }
 

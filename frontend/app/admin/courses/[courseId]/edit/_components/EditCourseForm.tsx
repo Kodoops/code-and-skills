@@ -47,15 +47,15 @@ const EditCourseForm = ({data, categories}:EditCourseFormProps) => {
             status: data.status,
             slug: data.slug,
             smallDescription: data.smallDescription,
-            userId: user?.id
+            userId: user?.userId
         },
     })
 
     useEffect(() => {
         if (user?.id) {
-            form.setValue("userId", user.id);
+            form.setValue("userId", user?.userId);
         }
-    }, [user?.id, form]);
+    }, [user?.userId, form]);
 
     if (loading) return <p>Chargement...</p>;
 

@@ -1,4 +1,3 @@
-
 // -----------------------------------
 // SITE OCNFIG
 // -----------------------------------
@@ -15,7 +14,7 @@ export type Feature = {
     updatedAt: string;
 };
 
-export type Page ={
+export type Page = {
     id: string
     createdAt: Date
     updatedAt: Date
@@ -25,20 +24,50 @@ export type Page ={
     content: string
 }
 
-export type CompanySocialLink={
+export type CompanySocialLink = {
     id: string
     createdAt: string
     updatedAt: string
     url: string
     companyId: string
     socialLink: {
-        id:string
+        id: string
         name: string
         iconLib: string
         iconName: string
         createdAt: Date
         updatedAt: Date
     }
+}
+
+export type  SocialLink = {
+    id: string
+    name: string
+    // url       String
+    iconLib: string // ex: "lucide", "si", "fa", "tabler"
+    iconName: string// ex: "facebook", "github", "x"
+    createdAt: string
+    updatedAt: string
+
+    companySocialLink: CompanySocialLink[]
+}
+
+export type  Company = {
+    id: string
+    name: string
+    address: string
+    postalCode: string
+    city: string
+    country: string
+    email: string
+    phone: string
+    siret: string
+    vatNumber: string
+    logoUrl: string
+    createdAt: string
+    updatedAt: string
+
+    companySocialLink: CompanySocialLink[]
 }
 
 export type Testimonial = {
@@ -58,11 +87,42 @@ export type TestimonialWithUser = Testimonial & {
     };
 };
 
+export type Newsletter = {
+    id: string;
+    email: string;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+    confirmed: Boolean
+}
+
+export type ContactMessage = {
+    id: string;
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+    userId: string;
+    replies: ContactReply[]
+}
+
+export type ContactReply = {
+    id: string;
+    contactMessageId: string;
+    contactMessage: ContactMessage;
+    adminId: string;
+    response: string;
+    createdAt: string;
+}
+
 /*
 *   AUTH MODELS
  */
 
-export  const LEVELS = ["Beginner", "Intermediate", "Advanced", "Expert"];
+export const LEVELS = ["Beginner", "Intermediate", "Advanced", "Expert"];
 export const STATUS = ["Draft", "Published", "Archived"];
 
 export interface UserProfile {
@@ -70,8 +130,9 @@ export interface UserProfile {
     firstname: string;
     lastname: string;
     email: string;
+    title: string;
     avatarUrl?: string;
-    role?:string;
+    role?: string;
     bio?: string;
     country?: string;
     city?: string;
@@ -103,7 +164,7 @@ export  type Domain = {
     iconLib: string | null
 }
 
-export type Category={
+export type Category = {
     id: string
     title: string
     slug: string
@@ -135,7 +196,7 @@ export type  Enrollment = {
     amount: number;
     status: string; // EnrollmentStatusEnum
 
-    courseId:String;
+    courseId: String;
     course?: Course;
     // learningPath?: LearningPath;
     // workshop?: Workshop;
@@ -194,7 +255,7 @@ export type LearningPathItemType = {
 }
 
 
-export type Course= {
+export type Course = {
     id: string
     createdAt: Date
     updatedAt: Date
@@ -211,13 +272,13 @@ export type Course= {
     stripePriceId: string
 
     userId: string
-    user : UserProfile
-    categoryId:string
-    categoryTitle:string
-    categorySlug:string
-    promotions:  Promotion []
+    user: UserProfile
+    categoryId: string
+    categoryTitle: string
+    categorySlug: string
+    promotions: Promotion []
 
-    chapters : Chapter[]
+    chapters: Chapter[]
 
     tags: Tag[]
 
@@ -243,9 +304,9 @@ export type Lesson = {
     videoKey: string
     duration: number
     position: number
-    publicAccess:boolean
+    publicAccess: boolean
     resourceIds: string []
-    chapter :string
+    chapter: string
 }
 
 export type LessonProgress = {
@@ -254,8 +315,8 @@ export type LessonProgress = {
     userId: string
     courseId: string
     progress: number
-    completed : boolean
-    completedAt : string
+    completed: boolean
+    completedAt: string
     createdAt: string
     updatedAt: string
 }

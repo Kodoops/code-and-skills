@@ -17,8 +17,8 @@ const UserSvg = ({
         <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 64 64"
-            width={size}
-            height={size}
+            width={size??64}
+            height={size??64}
             className="inline-block"
         >
             <circle cx="32" cy="32" r="32" className={bgClass} />

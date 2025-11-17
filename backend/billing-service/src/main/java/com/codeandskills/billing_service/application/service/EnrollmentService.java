@@ -44,14 +44,14 @@ public class EnrollmentService {
         PageRequest pageable = PageRequest.of(page, size);
         Page<Enrollment> enrollmentsPage = enrollmentRepository.findByUserId(userId, pageable);
 
-//        List<EnrollmentDTO> dtos = enrollmentsPage.getContent().stream()
-//                .map(e -> {
-//                    var courseResponse = catalogClient.getCourseById(e.getCourseId());
-//                    return EnrollmentMapper.toDTO(e, courseResponse);
-//                })
-//                .toList();
+        List<EnrollmentDTO> dtos = enrollmentsPage.getContent().stream()
+                .map(e -> {
+                    var courseResponse = catalogClient.getCourseById(e.getCourseId());
+                    return EnrollmentMapper.toDTO(e, courseResponse);
+                })
+                .toList();
 
-        List<EnrollmentDTO> dtos = enrollmentsPage.stream().map(EnrollmentMapper::toDTO).toList();
+      //  List<EnrollmentDTO> dtos = enrollmentsPage.stream().map(EnrollmentMapper::toDTO).toList();
 
         return new PagedResponse<>(
                 dtos,

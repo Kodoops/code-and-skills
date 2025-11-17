@@ -64,7 +64,7 @@ const Pagination = ({ page, totalPages }: PaginationProps) => {
 
             <Button
                 onClick={() => goToPage(page + 1)}
-                disabled={page >= totalPages-1}
+                disabled={page >= totalPages}
                 variant="outline"
                 className="cursor-pointer"
             >

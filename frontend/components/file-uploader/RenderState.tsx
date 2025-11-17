@@ -4,8 +4,7 @@ import {cn} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import Image from "next/image";
 import FileSVG from '../custom-ui/FileSVG';
-import {constructUrl, useConstructUrl} from "@/hooks/use-construct-url";
-import {UploaderFileType} from "@/models";
+
 
 export function RenderEmptyState({isDragActive}: { isDragActive: boolean }) {
     return (
@@ -49,7 +48,7 @@ export function RenderErrorState({error}: { error: string }) {
 export function RenderUploadedState({previewUrl, isDeleting, handleRemoveFile, fileType, file}:
                                     {
                                         previewUrl: string, isDeleting: boolean, handleRemoveFile: () => void,
-                                        fileType: UploaderFileType,
+                                        fileType: string,
                                         file : string
                                     }) {
 

@@ -22,9 +22,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(gatewayAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                      //  .requestMatchers("/profiles/user/public").permitAll()
-                        .requestMatchers("/profiles/user/**").permitAll()
-                        .requestMatchers("/profiles/**").authenticated()
+                        .requestMatchers("/profiles/public/**").permitAll()
+                        .requestMatchers("/profiles/me/**").authenticated()
+                        .requestMatchers("/profiles/user/**").authenticated()
                         .requestMatchers("/profiles/premium/**").hasAnyRole("PREMIUM", "ADMIN")
                         .requestMatchers("/profiles/instructor/**").hasAnyRole("ADMIN", "INSTRUCTOR")
                         .requestMatchers("/profiles/admin/**").hasRole("ADMIN")

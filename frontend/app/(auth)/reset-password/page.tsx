@@ -11,8 +11,8 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Form, FormField, FormItem, FormLabel, FormControl, FormMessage} from "@/components/ui/form";
 import {Loader2} from "lucide-react";
-import {resetPasswordAction} from "@/actions/auth/password";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {resetPasswordAction} from "@/actions/public/password";
 
 export default function ResetPasswordPage() {
     const params = useSearchParams();
@@ -38,7 +38,7 @@ export default function ResetPasswordPage() {
         startTransition(async () => {
             const result = await resetPasswordAction(token, values.password);
 
-            if (result.success) {
+            if (result.status === "success") {
                 toast.success(result.message, {
                     style: {background: "#D1FAE5", color: "#065F46"},
                 });

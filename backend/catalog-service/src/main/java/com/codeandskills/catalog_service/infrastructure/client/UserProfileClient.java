@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 )
 public interface UserProfileClient {
 
-    @PostMapping("/profiles/user/public")
+    @PostMapping("/profiles/public")
     UserProfileDTO getUserProfileById( @RequestBody GetPublicUserProfile userProfile);
+
 }

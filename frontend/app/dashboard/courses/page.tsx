@@ -51,7 +51,9 @@ async function RenderCourses({current, nbrPage}:{current?: number | undefined, n
 
                         <div className={"grid grid-cols-1 md:grid-cols-3 gap-6"}>
                             {enrolledCourses.map((item) => {
+
                                 if(!item) return null;
+
                                 return <CourseProgressCard key={item?.id} data={item.course as unknown as Course }/>
                             })}
                         </div>

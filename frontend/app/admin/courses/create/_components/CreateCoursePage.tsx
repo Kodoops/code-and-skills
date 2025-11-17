@@ -42,7 +42,7 @@ const CreateCoursePage =  ( { categories , levels, status}:CreateCoursePageProps
     const router = useRouter();
     const {triggerConfetti} = useConfetti();
 
-
+    console.log(user)
 
     const form = useForm<CourseSchema>({
         resolver: zodResolver(courseSchema) as Resolver<CourseSchema>,
@@ -58,16 +58,16 @@ const CreateCoursePage =  ( { categories , levels, status}:CreateCoursePageProps
             fileKey: "",
             categoryId: "",
             status: "DRAFT",
-            userId: user?.id
+            userId: user?.userId
         },
     })
 
 
     useEffect(() => {
         if (user?.id) {
-            form.setValue("userId", user.id);
+            form.setValue("userId", user?.userId);
         }
-    }, [user?.id, form]);
+    }, [user?.userId, form]);
 
     if (loading) return <p>Chargement...</p>;
     if (!user) return <p>Redirection...</p>;
@@ -75,7 +75,7 @@ const CreateCoursePage =  ( { categories , levels, status}:CreateCoursePageProps
 
     function onSubmit(values: CourseSchema) {
         startTransition(async () => {
-
+            console.log("values: ", values, "user:", user)
             const result = await adminCreateCourse(values);
 
             handleActionResult(result, {
@@ -287,33 +287,6 @@ const CreateCoursePage =  ( { categories , levels, status}:CreateCoursePageProps
                                     )}
                                 />
                             </div>
-                            {/*<FormField*/}
-                            {/*    control={form.control}*/}
-                            {/*    name="status"*/}
-                            {/*    render={({field}) => (*/}
-                            {/*        <FormItem className="w-full">*/}
-                            {/*            <FormLabel>Status</FormLabel>*/}
-                            {/*            <Select*/}
-                            {/*                value={field.value}*/}
-                            {/*                onValueChange={field.onChange}*/}
-                            {/*            >*/}
-                            {/*                <FormControl>*/}
-                            {/*                    <SelectTrigger className="w-full">*/}
-                            {/*                        <SelectValue placeholder="Select status"/>*/}
-                            {/*                    </SelectTrigger>*/}
-                            {/*                </FormControl>*/}
-                            {/*                <SelectContent>*/}
-                            {/*                    {status.map((status) => (*/}
-                            {/*                        <SelectItem key={status} value={status}>*/}
-                            {/*                            {status}*/}
-                            {/*                        </SelectItem>*/}
-                            {/*                    ))}*/}
-                            {/*                </SelectContent>*/}
-                            {/*            </Select>*/}
-                            {/*            <FormMessage/>*/}
-                            {/*        </FormItem>*/}
-                            {/*    )}*/}
-                            {/*/>*/}
 
                             <Button type={"submit"} disabled={pending}>
                                 {pending ? (<>

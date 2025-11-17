@@ -1,9 +1,12 @@
+"use server"
 
 import {newsletterSchema, NewsletterSchema} from "@/lib/db/zodSchemas";
-import { ResponseType} from "@/models";
 import {handleAxiosError} from "@/lib/handleAxiosError";
+import {TypeResponse} from "@/lib/types";
+import {AxiosServerClient} from "@/lib/axiosServerClient";
+import { Newsletter } from "@/models";
 
-export async function subscribeToNewsletter(values: NewsletterSchema): Promise<ResponseType< null>> {
+export async function subscribeToNewsletter(values: NewsletterSchema): Promise<TypeResponse<Newsletter>> {
     const parsed = newsletterSchema.safeParse(values);
 
     if (!parsed.success) {
@@ -11,20 +14,48 @@ export async function subscribeToNewsletter(values: NewsletterSchema): Promise<R
     }
 
     try {
-        // const existing = await prisma.newsletterSubscription.findUnique({
-        //     where: { email: parsed.data.email },
-        // });
-        //
-        // if (existing) {
-        //     return { status: "error", message: "Cet email est déjà inscrit." };
-        // }
-        //
-        // await prisma.newsletterSubscription.create({
-        //     data: { ...parsed.data},
-        // });
+        const client = await AxiosServerClient();
+       const res =  await client.post(`/notifications/newsletter/subscribe`, values);
 
-        return { status: "success", message: "Inscription réussie !" , data: null};
+        if (!res.data?.success || !res.data.data) {
+            return {
+                status: "error",
+                message: res.data?.message || "Erreur lors de l'inscription de la subscription a la newsletter",
+                data: null,
+            };
+        }
+
+        return {
+            status: "success",
+            message: res.data.message || "Inscription a la newsletter avec succès",
+            data: res.data.data,
+        };
     } catch (error) {
-        return handleAxiosError<null>(error, "Erreur lors de la souscription a la newsletter ");
+        return handleAxiosError<Newsletter>(error, "Erreur lors de l'inscription de la subscription a la newsletter");
+    }
+}
+
+
+export async function confirmNewsletterSubscription(email: string): Promise<TypeResponse<Newsletter>> {
+
+    try {
+        const client = await AxiosServerClient();
+        const res =  await client.put(`/notifications/newsletter/confirm`, { email });
+
+        if (!res.data?.success || !res.data.data) {
+            return {
+                status: "error",
+                message: res.data?.message || "Erreur lors de la confirmation de la subscription a la newsletter ",
+                data: null,
+            };
+        }
+
+        return {
+            status: "success",
+            message: res.data.message || "Inscription a la newsletter confirmée avec succès",
+            data: res.data.data,
+        };
+    } catch (error) {
+        return handleAxiosError<Newsletter>(error, "Erreur lors de la confirmation de la subscription a la newsletter");
     }
 }

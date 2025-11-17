@@ -4,7 +4,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { AxiosServerClient } from "@/lib/axiosServerClient";
-import {ApiResponse, SessionUser} from "@/models";
+import { SessionUser} from "@/models";
+import {ApiResponse} from "@/lib/types";
 
 
 /**

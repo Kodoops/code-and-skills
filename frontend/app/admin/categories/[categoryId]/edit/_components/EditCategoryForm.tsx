@@ -17,8 +17,10 @@ import {notFound, useRouter} from "next/navigation";
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import slugify from 'slugify';
-import {Category, Domain, iconLibs, listColors} from '@/models';
+import {Category, Domain} from '@/models';
 import {adminUpdateCategory} from "@/actions/admin/categories";
+import {iconLibs, listColors} from "@/lib/types";
+import {handleActionResult} from "@/lib/handleActionResult";
 
 interface EditCategoryFormProps {
     data   :Category,
@@ -48,33 +50,17 @@ const EditCategoryForm = ({data, domains}:EditCategoryFormProps) => {
 
     function onSubmit(values: CategorySchema) {
         startTransition(async () => {
-            const {data:result , error} = await tryCatch(adminUpdateCategory( data!.id, values));
+            const result = await adminUpdateCategory( data!.id, values);
 
-            if (error) {
-                toast.error(error.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        color: "#991B1B",
-                    },
-                });
-            }
-            if (result?.status === "success") {
-                toast.success(result?.message, {
-                    style: {
-                        background: "#D1FAE5",
-                        color: "#065F46",
-                    },
-                });
-                form.reset();
-                router.push("/admin/categories");
-            }else{
-                toast.error(result?.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        color: "#991B1B",
-                    },
-                });
-            }
+            handleActionResult(result, {
+                onSuccess: () => {
+                    console.log("✅ Catégorie mise à jour !");
+                    router.push("/admin/categories");
+                },
+                onError: (message) => {
+                    console.warn("❌ Erreur:", message);
+                },
+            });
         })
     }
 

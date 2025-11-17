@@ -8,10 +8,10 @@ const Stats = async () => {
     return (
         <div className="mt-10 grid w-full max-w-4xl grid-cols-2 gap-4 sm:grid-cols-4">
             {[
-                { k: `+ ${lessons}`, v: "Leçons vidéos" },
-                { k: `+ ${courses}`, v: "Formations" },
+                { k: `+ ${lessons}`, v: "Leçons vidéos / Articles" },
+                { k: `+ ${courses}`, v: "Formations / Parcours" },
                 { k: `+ ${quizzes}`, v: "Exercices / Quiz" },
-                { k: "100%", v: "Pratique" },
+                { k: "100%", v: "Pratique & Support" },
             ].map((s) => (
                 <Card key={s.v}>
                     <div className="text-2xl font-extrabold">{s.k}</div>

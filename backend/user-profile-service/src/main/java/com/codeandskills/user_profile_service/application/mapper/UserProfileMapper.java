@@ -22,6 +22,7 @@ public class UserProfileMapper {
                 .lastname(user.getLastname())
                 .email(user.getEmail())
                 .avatarUrl(user.getAvatarUrl())
+                .title(user.getTitle())
                 .bio(user.getBio())
                 .stripeCustomerId(user.getStripeCustomerId())
                 .userId(user.getUserId())
@@ -40,6 +41,7 @@ public class UserProfileMapper {
                 .lastname(user.getLastname())
                 .email(user.getEmail())
                 .avatarUrl(user.getAvatarUrl())
+                .title(user.getTitle())
                 .bio(user.getBio())
                 .city(user.getCity())
                 .country(user.getCountry())
@@ -49,24 +51,4 @@ public class UserProfileMapper {
                 .build();
     }
 
-    /**
-     * 🔹 Convertit un DTO (par ex. reçu du service UserProfile via Feign)
-     *    vers le modèle domaine local (optionnel, si tu en as besoin)
-     */
-//    public UserProfile toEntity(UserProfileDTO dto) {
-//        if (dto == null) return null;
-//
-//        return new UserProfile(
-//                dto.getId(),
-//                dto.getFirstname(),
-//                dto.getLastname(),
-//                dto.getEmail(),
-//                dto.getAvatarUrl(),
-//                dto.getBio(),
-//                dto.getCountry(),
-//                dto.getCity(),
-//                dto.isPremium(),
-//                LocalDateTime.parse(dto.getLastLoginAt()!=null ? dto.getLastLoginAt() : null)
-//        );
-//    }
 }

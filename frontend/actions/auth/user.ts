@@ -4,6 +4,7 @@ import { AxiosServerClient } from "@/lib/axiosServerClient";
 import { UserProfile } from "@/models";
 import { handleAxiosError } from "@/lib/handleAxiosError";
 import {ApiResponse, TypeResponse} from "@/lib/types";
+import type {UpdateProfileSchema} from "@/lib/db/zodSchemas";
 
 /**
  * 🔹 Récupère le profil utilisateur connecté
@@ -34,14 +35,7 @@ export async function getUserProfileAction(): Promise<TypeResponse<UserProfile |
 /**
  * 🔧 Met à jour le profil utilisateur
  */
-export async function updateProfileAction(values: {
-    firstname?: string;
-    lastname?: string;
-    bio?: string;
-    country?: string;
-    city?: string;
-    avatarUrl?: string;
-}): Promise<TypeResponse<UserProfile | null>> {
+export async function updateProfileAction(values: UpdateProfileSchema): Promise<TypeResponse<UserProfile | null>> {
     try {
         const client = await AxiosServerClient();
         const res = await client.put<ApiResponse<UserProfile>>("/profiles/me", values);

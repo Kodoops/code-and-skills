@@ -15,6 +15,7 @@ public class UserProfileDTO {
     private String lastname;
     private String email;
     private String avatarUrl;
+    private String title;
     private String bio;
     private String country;
     private String city;

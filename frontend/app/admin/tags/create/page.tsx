@@ -22,11 +22,10 @@ import {
 } from "@/components/ui/form"
 import slugify from "slugify";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {tryCatch} from "@/hooks/try-catch";
-import {toast} from "sonner";
 import {useRouter} from "next/navigation";
 import {adminCreateTag} from "@/actions/admin/tags";
-import {listColors} from "@/models";
+import {listColors} from "@/lib/types";
+import {handleActionResult} from "@/lib/handleActionResult";
 
 const CreateTagPage = () => {
     const [pending, startTransition] = useTransition();
@@ -43,33 +42,17 @@ const CreateTagPage = () => {
 
     function onSubmit(values: TagSchema) {
         startTransition(async () => {
-            const {data:result , error} = await tryCatch(adminCreateTag(values));
+            const result = await adminCreateTag(values);
 
-            if (error) {
-                toast.error(error.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        color: "#991B1B",
-                    },
-                });
-            }
-            if (result?.status === "success") {
-                toast.success(result?.message, {
-                    style: {
-                        background: "#D1FAE5",
-                        color: "#065F46",
-                    },
-                });
-                form.reset();
-                router.push("/admin/tags");
-            }else{
-                toast.error(result?.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        color: "#991B1B",
-                    },
-                });
-            }
+            handleActionResult(result, {
+                onSuccess: () => {
+                    console.log("✅ Tag créé !");
+                    router.push("/admin/tags");
+                },
+                onError: (message) => {
+                    console.warn("❌ Erreur:", message);
+                },
+            });
         })
     }
 

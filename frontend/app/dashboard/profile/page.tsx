@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {Card, CardContent,CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {getUserProfileAction, updateProfileAction} from "@/actions/auth/user";
+import Uploader from "@/components/file-uploader/Uploader";
 
 export default function ProfilePage() {
     const [isPending, startTransition] = useTransition();
@@ -30,6 +31,8 @@ export default function ProfilePage() {
     const form = useForm<UpdateProfileSchema>({
         resolver: zodResolver(updateProfileSchema),
         defaultValues: {
+            email:"",
+            title:"",
             firstname: "",
             lastname: "",
             bio: "",
@@ -43,7 +46,7 @@ export default function ProfilePage() {
     useEffect(() => {
         const loadProfile = async () => {
             const res = await getUserProfileAction();
-            if (res.success && res.data) {
+            if (res.status==="success" && res.data) {
                 form.reset(res.data);
             } else {
                 toast.error(res.message || "Impossible de charger le profil.");
@@ -55,7 +58,7 @@ export default function ProfilePage() {
     const onSubmit = (values: UpdateProfileSchema) => {
         startTransition(async () => {
             const res = await updateProfileAction(values);
-            if (res.success) {
+            if (res.status==="success" ) {
                 toast.success(res.message, {
                     style: { background: "#D1FAE5", color: "#065F46" },
                 });
@@ -111,6 +114,33 @@ export default function ProfilePage() {
 
                     <FormField
                         control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Email <span className={"text-sm italic text-primary"}>(non modifiable)</span> </FormLabel>
+                                <FormControl>
+                                    <Input {...field} value={field.value ?? ""} placeholder="Ex: email@email.com" disabled={true} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="title"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Titre ou Fonction</FormLabel>
+                                <FormControl>
+                                    <Input {...field} value={field.value ?? ""} placeholder="Ex: Developpeur Fullstack" disabled={isPending} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
                         name="bio"
                         render={({ field }) => (
                             <FormItem>
@@ -162,18 +192,20 @@ export default function ProfilePage() {
                     <FormField
                         control={form.control}
                         name="avatarUrl"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>URL de l’avatar</FormLabel>
+                        render={({field}) => (
+                            <FormItem className={"w-full"}>
+                                <FormLabel>Avatar</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        {...field}
-                                        value={field.value ?? ""}
-                                        placeholder="https://example.com/avatar.png"
-                                        disabled={isPending}
+
+                                    <Uploader
+                                        value={field.value as string}
+                                        onChange={field.onChange}
+                                        fileTypeAccepted="image"
+                                        folder="public/avatars"
+                                        fileType="AVATAR"
                                     />
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage/>
                             </FormItem>
                         )}
                     />

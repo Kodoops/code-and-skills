@@ -24,11 +24,10 @@ import {
 import slugify from "slugify";
 import {Textarea} from '@/components/ui/textarea';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {tryCatch} from "@/hooks/try-catch";
-import {toast} from "sonner";
 import {useRouter} from "next/navigation";
 import {adminCreateDomain} from "@/actions/admin/domain";
-import {iconLibs, listColors} from "@/models";
+import {iconLibs, listColors} from "@/lib/types";
+import {handleActionResult} from "@/lib/handleActionResult";
 
 const CreateDomainPage = () => {
     const [pending, startTransition] = useTransition();
@@ -48,33 +47,18 @@ const CreateDomainPage = () => {
 
     function onSubmit(values: DomainSchema) {
         startTransition(async () => {
-            const {data:result , error} = await tryCatch(adminCreateDomain(values));
+            const result = await adminCreateDomain(values);
 
-            if (error) {
-                toast.error(error.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        border: "1px solid #EF4444",
-                    },
-                });
-            }
-            if (result?.status === "success") {
-               toast.success(result?.message, {
-                   style: {
-                       background: "#D1FAE5",
-                       color: "#065F46",
-                   },
-               });
-               form.reset();
-               router.push("/admin/domains");
-            }else{
-                toast.error(result?.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        color: "#991B1B",
-                    },
-                });
-            }
+            handleActionResult(result, {
+                onSuccess: () => {
+                    console.log("✅ Domaine créé !");
+                    router.push("/admin/domains");
+                },
+                onError: (message) => {
+                    console.warn("❌ Erreur:", message);
+                },
+            });
+
         })
     }
 

@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @SpringBootApplication(scanBasePackages = {
 		"com.codeandskills.auth_service",
-		"com.codeandskills.common" // 👈 pour inclure le module commun
+		"com.codeandskills.common"
 })
 public class AuthServiceApplication {
 

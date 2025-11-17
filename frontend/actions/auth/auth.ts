@@ -60,6 +60,7 @@ export async function loginAction(credentials: {
             data: null,
         };
     } catch (error) {
+        console.log(error)
         return handleAxiosError(error, "Échec de la connexion.");
     }
 }

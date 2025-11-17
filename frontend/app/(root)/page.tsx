@@ -25,9 +25,11 @@ import { getPopularCategories, getRandomCategories} from "@/actions/public/categ
 import {getRecentCourses} from "@/actions/public/course";
 import {getAllFeatures} from "@/actions/feature";
 import {getAllTestimonials} from "@/actions/testimonials";
-import {getAllEnrolledLearningPathsByUser, getFeaturedLearningPaths} from "@/actions/learning-path";
+import {getFeaturedLearningPaths} from "@/actions/learning-path";
 import {Course, Enrollment, LearningPath} from "@/models";
 import {getAllEnrolledCoursesByUser} from "@/actions/auth/course";
+import CardError from "@/components/custom-ui/CardError";
+import {FEATURES_PER_PAGE} from "@/constants/user-contants";
 
 
 export default async function Home() {
@@ -63,7 +65,7 @@ export default async function Home() {
             </Section>
 
             {/* Paths */}
-            <Section className="py-12">
+           {/* <Section className="py-12">
                 <SectionHeader
                     title={"Pourquoi pas un parcours ?"}
                     btnListHref={"/learning-paths"}
@@ -73,47 +75,57 @@ export default async function Home() {
                     <RenderLearningPaths/>
                 </Suspense>
             </Section>
-
+*/}
             {/* FEATURES */}
             <Section className="py-12">
-                <SectionTitle
-                    title="Pourquoi "
-                    subTitle={"Une plateforme pensée pour apprendre vite, bien et durablement."}
-                >
-                    <AppLogoText
-                        logo="/logo/CODE_SKILLS_cropped.png"
-                        alt="code and skills text"
-                        width={250}
-                        height={200}
-                    />
-                </SectionTitle>
+               <div className="flex items-center justify-between space-x-4 mb-10">
+                   <SectionTitle
+                       title="Pourquoi "
+                       subTitle={"Une plateforme pensée pour apprendre vite, bien et durablement."}
+                   >
+                       <AppLogoText
+                           logo="/logo/CODE_SKILLS_cropped.png"
+                           alt="code and skills text"
+                           width={250}
+                           height={200}
+                       />
+                   </SectionTitle>
+                   <Button
+                       asChild
+                       variant="ghost"
+                       className="rounded-xl border  border-border px-3 py-2 text-sm "
+                   >
+                       <Link href={"/pages/pourquoi"}>Voir plus...</Link>
+                   </Button>
+               </div>
 
                 <Suspense fallback={<FeaturesLoadingSkeletonLayout/>}>
                     <RenderFeatures/>
                 </Suspense>
+
             </Section>
 
             {/* PARTNERS / PROMO */}
-            <Section className="py-12">
+           {/* <Section className="py-12">
 
                 <Suspense fallback={<BannerPartnerLoadingSkeletonLayout/>}>
                     <RenderBannerPartner/>
                 </Suspense>
 
-            </Section>
+            </Section>*/}
 
             {/* TESTIMONIALS id="testimonials"*/}
-            <Section className="py-12">
-                <SectionTitle
-                    title="Ils apprennent avec Code&Skills"
-                    subTitle={"Des retours concrets d’apprenants et de pros."}
-                >
-                </SectionTitle>
+            {/*<Section className="py-12">*/}
+            {/*    <SectionTitle*/}
+            {/*        title="Ils apprennent avec Code&Skills"*/}
+            {/*        subTitle={"Des retours concrets d’apprenants et de pros."}*/}
+            {/*    >*/}
+            {/*    </SectionTitle>*/}
 
-                <Suspense fallback={<TestimonialsLoadingSkeletonLayout/>}>
-                    <RenderTestimonials/>
-                </Suspense>
-            </Section>
+            {/*    <Suspense fallback={<TestimonialsLoadingSkeletonLayout/>}>*/}
+            {/*        <RenderTestimonials/>*/}
+            {/*    </Suspense>*/}
+            {/*</Section>*/}
 
             {/* NEWSLETTER id="newsletter"*/}
             <Section className="py-14">
@@ -233,10 +245,13 @@ function CategoriesLoadingSkeletonLayout() {
 }
 
 async function RenderFeatures() {
-    const {data, totalPages, perPage, page, total} = await getAllFeatures(1, 9)
+    const result = await getAllFeatures(0, FEATURES_PER_PAGE)
 
+    if(! result || !result.data) {
+        <CardError  message={result.message} title={"Error Features"} />
+    }
     return (
-        <FeaturedCarouselClient items={data} perPage={3}/>
+        <FeaturedCarouselClient items={result.data?.content!} perPage={3}/>
     )
 }
 

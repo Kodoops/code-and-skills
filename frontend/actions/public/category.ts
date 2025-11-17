@@ -1,9 +1,9 @@
 "use server";
 
-import {Category, Course} from "@/models";
+import {Category} from "@/models";
 import {AxiosServerClient} from "@/lib/axiosServerClient";
 import {handleAxiosError} from "@/lib/handleAxiosError";
-import {ApiResponse, PagedResponse, PaginationResponse, TypeResponse} from "@/lib/types";
+import {ApiResponse, PagedResponse,  TypeResponse} from "@/lib/types";
 
 /**
  * 🔹 Récupère les catégories les plus populaires

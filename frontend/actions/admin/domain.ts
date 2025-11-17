@@ -1,14 +1,16 @@
 "use server";
 
-import { ApiResponse, Domain, PagedResponse, ResponseType } from "@/models";
+import {  Domain} from "@/models";
 import { AxiosServerClient } from "@/lib/axiosServerClient";
 import { DomainSchema } from "@/lib/db/zodSchemas";
 import { handleAxiosError } from "@/lib/handleAxiosError";
+import {ApiResponse, PagedResponse, TypeResponse} from "@/lib/types";
+import {requireAdmin} from "@/actions/admin/requireAdmin";
 
 /**
  * 🔹 Récupère tous les domaines (non paginés)
  */
-export async function adminGetAllDomains(): Promise<ResponseType<Domain[] | null>> {
+export async function adminGetAllDomains(): Promise<TypeResponse<Domain[] | null>> {
     try {
         const client = await AxiosServerClient();
         const res = await client.get<ApiResponse<Domain[]>>(`/catalog/admin/domains/all`);
@@ -37,7 +39,7 @@ export async function adminGetAllDomains(): Promise<ResponseType<Domain[] | null
 export async function adminGetDomains(
     page = 0,
     size = 10
-): Promise<ResponseType<PagedResponse<Domain>>> {
+): Promise<TypeResponse<PagedResponse<Domain>>> {
     try {
         const client = await AxiosServerClient();
         const res = await client.get<ApiResponse<PagedResponse<Domain>>>(
@@ -66,7 +68,7 @@ export async function adminGetDomains(
 /**
  * 🔹 Récupère un domaine par son ID
  */
-export async function adminGetDomainById(domainId: string): Promise<ResponseType<Domain | null>> {
+export async function adminGetDomainById(domainId: string): Promise<TypeResponse<Domain | null>> {
     if (!domainId) {
         return {
             status: "error",
@@ -103,7 +105,7 @@ export async function adminGetDomainById(domainId: string): Promise<ResponseType
 export async function adminUpdateDomain(
     id: string,
     payload: Partial<Domain>
-): Promise<ResponseType<Domain | null>> {
+): Promise<TypeResponse<Domain | null>> {
     if (!id) {
         return {
             status: "error",
@@ -139,9 +141,11 @@ export async function adminUpdateDomain(
  */
 export async function adminCreateDomain(
     payload: DomainSchema
-): Promise<ResponseType<Domain | null>> {
+): Promise<TypeResponse<Domain | null>> {
+
     try {
         const client = await AxiosServerClient();
+
         const res = await client.post<ApiResponse<Domain>>(`/catalog/admin/domains`, payload);
 
         if (!res.data?.success || !res.data.data) {
@@ -165,7 +169,7 @@ export async function adminCreateDomain(
 /**
  * 🗑️ Supprime un domaine (admin)
  */
-export async function adminDeleteDomain(id: string): Promise<ResponseType<null>> {
+export async function adminDeleteDomain(id: string): Promise<TypeResponse<null>> {
     if (!id) {
         return {
             status: "error",

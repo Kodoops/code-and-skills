@@ -1,14 +1,9 @@
 "use client"
 
 import {
-    ChevronDownIcon,
+    ChevronDownIcon, Loader2,
 } from "lucide-react"
 
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@/components/ui/avatar"
 import {Button, buttonVariants} from "@/components/ui/button"
 import {
     DropdownMenu,
@@ -19,13 +14,16 @@ import Link from "next/link";
 import {useSession} from "@/hooks/useSession";
 import React from "react";
 import UserDropDownMenuContent from "@/components/sidebar/UserDropDownMenuContent";
+import UserAvatar from "@/components/UserAvatar";
 
 export default function UserDropdown() {
 
     const {  user, logout, loading } = useSession();
 
     if (loading) return (
-        <div className={"text-muted-foreground"}>Loading...</div>
+        <div className={"text-muted-foreground"}>
+            <Loader2 className={"animate-spin"}/>
+        </div>
     )
 
     if (!user) {
@@ -47,13 +45,7 @@ export default function UserDropdown() {
        <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
-                        <Avatar>
-                            <AvatarImage src={user?.avatarUrl ?? `http://avatar.vercel.sh/${user?.email}`}
-                                         alt="Profile image"/>
-                            <AvatarFallback>
-                                {name && name.length > 0 ? name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                        </Avatar>
+                        <UserAvatar avatarUrl={user?.avatarUrl}  name={name}/>
                         <ChevronDownIcon
                             size={16}
                             className="opacity-60"

@@ -5,6 +5,7 @@ import { cache } from "react";
 import { AxiosServerClient } from "@/lib/axiosServerClient";
 import {UserProfile} from "@/models";
 import {ApiResponse} from "@/lib/types";
+import axios from "axios";
 
 
 /**
@@ -34,7 +35,29 @@ export const requireUser = cache(async () => {
         // ✅ OK → renvoie la session utilisateur
         return user;
     } catch (error: any) {
-        console.error("❌ requireUser: échec de vérification du token:", error.message);
+// 🔍 Cas 1 : erreur HTTP Axios
+        if (axios.isAxiosError(error)) {
+            const status = error.response?.status;
+
+            if (status === 401) {
+                // Token expiré / invalide → on nettoie les cookies si tu veux
+                // const cookieStore = await cookies();
+                // cookieStore.delete("auth_token");
+                // cookieStore.delete("refresh_token");
+
+                console.warn("🔑 requireUser: token expiré ou invalide → user déconnecté.");
+                return null;
+            }
+
+            console.error(
+                `❌ requireUser: erreur HTTP ${status} `,
+                error.response?.data || error.message
+            );
+            return null;
+        }
+
+        // 🔍 Cas 2 : autre erreur (réseau, bug, etc.)
+        console.error("❌ requireUser: erreur inattendue:", error);
         return null;
     }
 });

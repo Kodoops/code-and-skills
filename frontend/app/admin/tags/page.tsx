@@ -8,6 +8,7 @@ import Pagination from "@/components/general/Pagination";
 import {TAGS_PER_PAGE} from "@/constants/admin-contants";
 import { adminGetTagsPaginated} from "@/actions/admin/tags";
 import CardError from "@/components/custom-ui/CardError";
+import {Tag} from "@/models";
 
 
 const TagsPage = async (props: {
@@ -59,7 +60,7 @@ async function RenderTags({current, nbrPage}: { current?: number | undefined, nb
                 :
                 <>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                        {data?.map((tag) => {
+                        {data?.map((tag:Tag) => {
 
                                 return <AdminTagCard key={tag.id} id={tag.id} title={tag.title} color={tag.color} />
                             }

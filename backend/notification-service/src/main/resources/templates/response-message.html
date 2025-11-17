@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Réponse au Message de contact sur le site CodeAndSkills </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #2c3e50;
+        }
+
+        a.button {
+            display: inline-block;
+            background-color: #1d72b8;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Bonjour <span th:text="${userName}">Utilisateur</span> 👋</h2>
+    <p>Une réponse a été déposer a votre méssage sur notre site : <strong>CodeAndSkills</strong>.</p>
+    <p>Vous retrouverez  tout l'historique de nous échanges dans votre espace</p>
+    <p>
+        <a class="button" th:href="${profileLink}" target="_blank">Mon espace</a>
+    </p>
+
+    <hr/>
+    <p>La réponse au  méssage :</p>
+    <p>
+        <small  th:text="${response}">
+            Reponse
+        </small>
+    </p>
+    <p>Contenu de votre méssage :</p>
+   <p>
+       <small th:text="${sujet}">
+           Sujet
+       </small>
+   </p>
+    <p>
+       <small  th:text="${message}">
+           Message
+       </small>
+   </p>
+
+    <p>
+        Equipes CodeAndSkills.
+    </p>
+</div>
+</body>
+</html>

@@ -28,8 +28,10 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {tryCatch} from "@/hooks/try-catch";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
-import {Domain, iconLibs, listColors} from "@/models";
+import {Domain} from "@/models";
 import {adminCreateCategory} from "@/actions/admin/categories";
+import {iconLibs, listColors} from "@/lib/types";
+import {handleActionResult} from "@/lib/handleActionResult";
 
 const CreateCategoryForm = ({domains}:{domains:Domain[]}) => {
     const [pending, startTransition] = useTransition();
@@ -50,33 +52,17 @@ const CreateCategoryForm = ({domains}:{domains:Domain[]}) => {
 
     function onSubmit(values: CategorySchema) {
         startTransition(async () => {
-            const {data: result, error} = await tryCatch(adminCreateCategory(values));
+            const result = await adminCreateCategory(values);
 
-            if (error) {
-                toast.error(error.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        color: "#991B1B",
-                    },
-                });
-            }
-            if (result?.status === "success") {
-                toast.success(result?.message, {
-                    style: {
-                        background: "#D1FAE5",
-                        color: "#065F46",
-                    },
-                });
-                form.reset();
-                router.push("/admin/categories");
-            } else {
-                toast.error(result?.message, {
-                    style: {
-                        background: "#FEE2E2",
-                        color: "#991B1B",
-                    },
-                });
-            }
+            handleActionResult(result, {
+                onSuccess: () => {
+                    console.log("✅ Catégorie créée !");
+                    router.push("/admin/categories");
+                },
+                onError: (message) => {
+                    console.warn("❌ Erreur:", message);
+                },
+            });
         })
     }
 

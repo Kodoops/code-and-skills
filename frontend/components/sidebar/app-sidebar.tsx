@@ -42,12 +42,12 @@ const data = {
 
   navMain: [
     {
-      title: "Dashboard",
+      title: "Dashboard (*)",
       url: "/admin",
       icon: IconDashboard,
     },
     {
-      title: "Learning Path",
+      title: "Learning Path (*)",
       url: "/admin/learning-paths",
       icon: RouteIcon,
     },
@@ -57,17 +57,17 @@ const data = {
       icon: IconListDetails,
     },
     {
-      title: "Workshops",
+      title: "Workshops (*)",
       url: "/admin/workshops",
       icon: TrafficConeIcon,
     },
     {
-      title: "Resources",
+      title: "Resources (*)",
       url: "/admin/resources",
       icon: ToolCaseIcon,
     },
     {
-      title: "Quiz",
+      title: "Quiz (*)",
       url: "/admin/quiz",
       icon: BookOpenCheck,
     },
@@ -89,7 +89,7 @@ const data = {
       icon: TagIcon,
     },
     {
-      title: "Niveaux",
+      title: "Niveaux (*)",
       url: "/admin/levels",
       icon: SchoolIcon,
     },
@@ -113,12 +113,12 @@ const data = {
   ],
   navBilling:[
     {
-      title: "Plans",
+      title: "Plans (*)",
       url: "/admin/plans",
       icon: WalletIcon,
     },
     {
-      title: "Subscriptions",
+      title: "Subscriptions (*)",
       url: "/admin/subscriptions",
       icon: CalendarSyncIcon,
     },
@@ -136,7 +136,7 @@ const data = {
       icon: Newspaper,
     },
     {
-      title: "Settings",
+      title: "Settings (*)",
       url: "/admin/settings",
       icon: IconSettings,
     },

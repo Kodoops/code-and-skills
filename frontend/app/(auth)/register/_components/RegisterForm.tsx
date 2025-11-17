@@ -53,7 +53,7 @@ export default function RegisterForm() {
         startTransition(async () => {
             const result = await registerAction(values);
 
-            if (result.success) {
+            if (result.status === "success") {
                 toast.success(result.message || "Votre inscription a réussie 🎉", {
                     style: { background: "#D1FAE5", color: "#065F46" },
                 });

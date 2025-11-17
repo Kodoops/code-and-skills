@@ -33,7 +33,7 @@ public class GatewayAuthenticationFilter extends OncePerRequestFilter {
         String userId = request.getHeader("X-User-Id");
         String email = request.getHeader("X-User-Email");
         String role = request.getHeader("X-User-Role");
-//
+
 //        log.info("Gateway auth: userId={}, email={}, role={}", userId, email, role);
 //
 //        String path = request.getRequestURI();
@@ -43,15 +43,15 @@ public class GatewayAuthenticationFilter extends OncePerRequestFilter {
 //            return;
 //        }
 //
-////        String internalHeader = request.getHeader(INTERNAL_HEADER);
-////log.info("Internal header: {}", internalHeader);
-//
-////        // ✅ 1. Si la requête vient d’un microservice interne autorisé
-////        if (internalHeader != null && internalHeader.equals(internalSecret)) {
-////            // On saute toute authentification JWT ou gateway
-////            filterChain.doFilter(request, response);
-////            return;
-////        }
+       String internalHeader = request.getHeader(INTERNAL_HEADER);
+       log.info("Internal header: {}", internalHeader);
+
+        // ✅ 1. Si la requête vient d’un microservice interne autorisé
+        if (internalHeader != null && internalHeader.equals(internalSecret)) {
+            // On saute toute authentification JWT ou gateway
+            filterChain.doFilter(request, response);
+            return;
+        }
 
 //        log.info("Gateway auth: userId={}, email={}, role={}", userId, email, role);
 ////        // 🔹 Si la Gateway a mis les headers, on les transforme en Authentication

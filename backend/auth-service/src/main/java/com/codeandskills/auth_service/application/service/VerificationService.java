@@ -28,7 +28,7 @@ import static com.codeandskills.common.events.KafkaTopics.USER_EVENTS;
 @RequiredArgsConstructor
 public class VerificationService {
 
-    @Value( "${front.base-url}")
+    @Value( "${app.frontendUrl}")
     String FRONT_BASE_URL  ;
 
     @Value( "${app.name}")
@@ -126,7 +126,7 @@ public class VerificationService {
     public EmailRequestedEvent sendAccountVerificationEmail(User user, String token, String firstname) {
         Map<String, Object> variables = Map.of(
                 "userName", firstname!= null ? firstname:  "",
-                "verificationLink", FRONT_BASE_URL + "/auth/verify?token=" + token
+                "verificationLink", FRONT_BASE_URL + "/verify?token=" + token
         );
 
         EmailRequestedEvent event = new EmailRequestedEvent(

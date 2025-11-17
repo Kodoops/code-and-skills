@@ -36,6 +36,12 @@ spring:
         enabled: true
       globalcors:
         add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins: "${APP_FRONTEND_URL:http://localhost:3000}"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
       discovery:
         locator:
           enabled: true
@@ -90,6 +96,34 @@ spring:
             - StripPrefix=1
           metadata:
             sensitive-headers: [ ]
+
+        - id: content-service
+          uri: lb://content-service
+          predicates:
+            - Path=/api/content/**
+          filters:
+            - StripPrefix=1
+          metadata:
+            sensitive-headers: [ ]
+
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/**
+          filters:
+            - StripPrefix=1
+          metadata:
+            sensitive-headers: [ ]
+
+        - id: file-service
+          uri: lb://file-service
+          predicates:
+            - Path=/api/files/**
+          filters:
+            - StripPrefix=1
+          metadata:
+            sensitive-headers: [ ]
+
 
   # CORS simple
   webflux:
@@ -150,7 +184,8 @@ jwt:
     - /api/billing/webhook
 
     # Profile User publics (ajout important)
-    - /api/profiles/user/public
+    - /api/profiles/public/**
+    - /profiles/public/**
     - /api/profiles/user/*/stripe-customer
 
     # Catalog publics (ajout important)
@@ -161,6 +196,26 @@ jwt:
 #      - /api/catalog/domains
 #      - /api/catalog/categories
 
+    # Notification publics
+    - /api/notifications/newsletter/subscribe
+    - /notifications/newsletter/subscribe
+    - /api/notifications/newsletter/confirm
+    - /notifications/newsletter/confirm
+    - /api/notifications/contact
+    - /notifications/contact
+
+
+    # Content publics
+    - /api/content/features
+    - /content/features
+    - /api/content/pages
+    - /content/pages
+    - /api/content/companies/links
+    - /content/companies/links
+    - /api/content/companies/links/unlinked
+    - /content/companies/links/unlinked
+    - /content/companies/company
+
     # variantes sans /api (après StripPrefix)
     - /auth/login
     - /auth/register
@@ -169,7 +224,6 @@ jwt:
     - /auth/forgot-password
     - /auth/reset-password
     - /actuator/**
-    - /profiles/user/public
     - /profiles/user/*/stripe-customer
     - /billing/customers/ensure
     - /billing/webhook

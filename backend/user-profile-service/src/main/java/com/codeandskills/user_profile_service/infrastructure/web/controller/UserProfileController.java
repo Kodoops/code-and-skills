@@ -85,17 +85,23 @@ public class UserProfileController {
     /**
      * 🔹Mise a jour du stripeCustomerId du profile
      */
-    @PutMapping("/user/{id}/stripe-customer")
+    @PutMapping("/user/{id}/stripe-customer/{customerId}")
     UserProfileDTO updateStripeCustomer(@PathVariable("id") String userId,
-                                        @RequestBody Map<String, String> body){
+                                        @PathVariable("customerId") String customerId
+                                         ){
 
         UserProfile userProfile = profileService.getProfile(userId);
-        userProfile.setStripeCustomerId(body.get("stripeCustomerId"));
+        userProfile.setStripeCustomerId(customerId);
         return mapper.toDto(profileService.updateProfile(userId, userProfile));
     }
 
+    @GetMapping("/public/{userId}")
+    public ResponseEntity<ApiResponse<UserProfileDTO>> getUserProfileByIdPub(@PathVariable String userId) {
+        var profile = profileService.getProfile(userId);
+        return ResponseEntity.ok(ApiResponse.success(200, "Get User Profile successful", mapper.toDto(profile)));
+    }
 
-    @PostMapping("/user/public")
+    @PostMapping("/public")
     public PublicUserProfileDTO getUserProfileById(
             @RequestBody GetPublicUserProfile userProfile
     ) {

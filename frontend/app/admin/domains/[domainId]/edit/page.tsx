@@ -17,7 +17,7 @@ const EditDomainPage = async ({params}: { params: Params }) => {
     return (
         <div>
             <h1 className={"text-xl font-bold mb-8"}>
-                Edit Domain : <span className={"text-primary underline"}>{data.title}</span>
+                Edit Domain : <span className={"text-primary underline"}>{data.data?.title}</span>
             </h1>
             <Card>
                 <CardHeader>
@@ -27,7 +27,7 @@ const EditDomainPage = async ({params}: { params: Params }) => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <EditDomainForm data={data}/>
+                    <EditDomainForm data={data.data!}/>
                 </CardContent>
             </Card>
         </div>

@@ -29,8 +29,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/internal/**").permitAll()
-                        .requestMatchers("/auth/login", "/auth/register","/auth/refresh",
-                                "/auth/forgot-password", "/auth/reset-password", "/auth/verify").permitAll()
+                        .requestMatchers(
+                                "/auth/login",
+                                "/auth/register",
+                                "/auth/refresh",
+                                "/auth/forgot-password",
+                                "/auth/reset-password",
+                                "/auth/verify"
+                        ).permitAll()
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

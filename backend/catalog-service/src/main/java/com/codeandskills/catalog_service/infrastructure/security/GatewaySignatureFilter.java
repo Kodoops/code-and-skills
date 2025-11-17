@@ -37,7 +37,8 @@ public class GatewaySignatureFilter extends OncePerRequestFilter {
         }
 
         // ✅ Si la route est publique → pas besoin des autres headers
-        if (uri.startsWith("/catalog/public")) {
+
+        if (uri.startsWith("/catalog/public") || uri.startsWith("/profiles/public") ) {
             filterChain.doFilter(request, response);
             return;
         }

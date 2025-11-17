@@ -5,11 +5,6 @@ import {
 } from "@tabler/icons-react"
 
 import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@/components/ui/avatar"
-import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger,
@@ -24,6 +19,7 @@ import React from "react";
 import {useSession} from "@/hooks/useSession";
 import {useRouter} from "next/navigation";
 import UserDropDownMenuContent from "@/components/sidebar/UserDropDownMenuContent";
+import UserAvatar from "@/components/UserAvatar";
 
 export function NavUser() {
     const {isMobile} = useSidebar();
@@ -47,25 +43,12 @@ export function NavUser() {
                             size="lg"
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
-                            <Avatar className="h-8 w-8 rounded-lg ">
-                                <AvatarImage
-                                    src={user?.avatarUrl ?? `http://avatar.vercel.sh/${user?.email}`}
-                                    alt={user?.firstname + " " + user?.lastname}/>
-                                <AvatarFallback className="rounded-lg">
-                                    {(user?.firstname && user?.firstname.length > 0)
-                                    || (user?.lastname && user?.lastname.length > 0)
-                                        ? user?.firstname.charAt(0).toUpperCase() + user?.lastname.charAt(0).toUpperCase()
-                                        : user?.email.charAt(0).toUpperCase()}
-                                </AvatarFallback>
-                            </Avatar>
+                            <UserAvatar name={user?.firstname + " " + user?.lastname} avatarUrl={user?.avatarUrl} />
                             <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">
-                  {(user?.firstname && user?.firstname.length > 0)
-                  || (user?.lastname && user?.lastname.length > 0)
-                      ? user?.firstname.charAt(0).toUpperCase() + user?.lastname.charAt(0).toUpperCase()
-                      : user?.email.split("@")[0]}
+                  {user?.firstname + " " + user?.lastname}
                 </span>
-                                <span className="text-muted-foreground truncate text-xs">
+                <span className="text-muted-foreground truncate text-xs">
                   {user?.email}
                 </span>
                             </div>

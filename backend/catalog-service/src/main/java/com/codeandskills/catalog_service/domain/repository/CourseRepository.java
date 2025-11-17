@@ -1,6 +1,7 @@
 package com.codeandskills.catalog_service.domain.repository;
 
 
+import com.codeandskills.catalog_service.application.dto.CourseLessonCounts;
 import com.codeandskills.catalog_service.domain.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -63,5 +64,24 @@ public interface CourseRepository extends JpaRepository<Course, String> {
             @Param("isFree") Boolean isFree,
             Pageable pageable
     );
+
+    @Query("""
+        SELECT COUNT(c)
+        FROM Course c
+        WHERE (:status IS NULL OR c.status = :status)
+    """)
+    long countByOptionalStatus(@Param("status") CourseStatus status);
+
+
+    @Query("""
+        SELECT 
+          COUNT(DISTINCT c.id) AS courses,
+          COUNT(l.id)          AS lessons
+        FROM Course c
+          LEFT JOIN c.chapters ch
+          LEFT JOIN ch.lessons l
+        WHERE (:status IS NULL OR c.status = :status)
+    """)
+    CourseLessonCounts countCoursesAndLessonsByStatus(@Param("status") CourseStatus status);
 }
 

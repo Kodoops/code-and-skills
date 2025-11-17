@@ -73,11 +73,11 @@ const SingleCoursePage = async ({params}: { params: Params }) => {
                     </div>
 
                     <AuthorBanner
-                        name={course.user.lastname + ' ' + course.user.firstname }
-                        title={course.user.email}
-                        description={course.user.id}
-                        avatar={course.user.avatarUrl}
-                        rating={4.2}
+                        name={course.user ? course.user.lastname + ' ' + course.user.firstname : "N.C" }
+                        title={course.user ? course.user.title : ""}
+                        description={course.user ? course.user.bio : ""}
+                        avatar={course.user ? course.user.avatarUrl : ""}
+                        rating={4.2} // TODO :: to be compléted with rating service
                     />
 
                     <Separator className={"my-8"}/>

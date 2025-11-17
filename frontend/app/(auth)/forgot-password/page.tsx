@@ -10,8 +10,8 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Form, FormField, FormItem, FormLabel, FormControl, FormMessage} from "@/components/ui/form";
 import {Loader2} from "lucide-react";
-import {forgotPasswordAction} from "@/actions/auth/password";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {forgotPasswordAction} from "@/actions/public/password";
 
 export default function ForgotPasswordPage() {
     const [isPending, startTransition] = useTransition();
@@ -25,7 +25,7 @@ export default function ForgotPasswordPage() {
         startTransition(async () => {
             const result = await forgotPasswordAction(values.email);
 
-            if (result.success) {
+            if (result.status === "success") {
                 toast.success(result.message, {
                     style: {background: "#D1FAE5", color: "#065F46"},
                 });

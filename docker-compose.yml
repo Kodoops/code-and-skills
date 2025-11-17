@@ -17,8 +17,14 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d codeandskills" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - codeandskills-net
+    profiles: ["infra"]
 
   # 🧰 Interface d'administration PostgreSQL
   pgadmin:
@@ -28,12 +34,22 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@codeandskills.local
       PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 80
     ports:
       - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost/ || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - codeandskills-net
+    profiles: ["infra"]
 
   # 📬 Serveur SMTP de développement
   smtp4dev:
@@ -43,9 +59,16 @@ services:
     ports:
       - "1080:80"   # interface web
       - "2525:25"   # port SMTP
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost/ || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - codeandskills-net
+    profiles: [ "infra" ]
 
+  # cache server BD
   redis:
     image: redis:7.2-alpine
     container_name: redis
@@ -55,39 +78,105 @@ services:
     command: [ "redis-server", "--save", "60", "1", "--loglevel", "warning" ]
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - codeandskills-net
+    profiles: [ "infra" ]
 
+  # cache server BD  UI
   redis-insight:
     image: redis/redisinsight:latest
     container_name: redis-insight
     restart: unless-stopped
     ports:
       - "5540:5540"
+    volumes:
+      - redis_insight:/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:5540/ || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - codeandskills-net
+    profiles: [ "infra" ]
 
+  # Messaging Servers - Zookeeper
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
+    # ⚠️ Évite d'exposer au host pour ne plus recevoir des paquets invalides :
+    # ports:
+    #   - "2181:2181"
+    healthcheck:
+      test: [ "CMD-SHELL", "echo ruok > /dev/tcp/127.0.0.1/2181 && echo imok | grep -q imok || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+    networks:
+      - codeandskills-net
+    profiles: [ "infra" ]
 
+  # Messaging Servers - Kafka
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     container_name: kafka
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     ports:
       - "9092:9092"
+      - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+
+      # 2 listeners: host & inter-broker/internal
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+
+      # Dev-friendly
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    healthcheck:
+      test: [ "CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list >/dev/null 2>&1" ]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+    networks:
+      - codeandskills-net
+    profiles: [ "infra" ]
+
+  # Messaging Servers - Kafka UI
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    container_name: kafdrop
+    ports:
+      - "9000:9000"
+    environment:
+      SERVER_PORT: 9000
+      KAFKA_BROKERCONNECT: kafka:29092   # ← IMPORTANT: le nom du service docker, pas localhost
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - codeandskills-net
+    profiles: ["infra"]
+
+
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
   #  MICROSERVICES
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
@@ -100,12 +189,12 @@ services:
     ports:
       - "8761:8761"
     healthcheck:
-      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:8761" ]
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:8761 || exit 1" ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      SPRING_PROFILES_ACTIVE: docker
     networks:
       - codeandskills-net
     # monter le code source directement
@@ -113,6 +202,7 @@ services:
       - ./backend/discovery-service:/app/discovery-service
       - ./backend/common:/app/common
       - ~/.m2:/root/.m2   # ✅ ce volume permet d’utiliser ton repo Maven local
+    profiles: ["services"]
 
 #  gateway:
 #    build:
@@ -174,23 +264,23 @@ services:
 ##   FRONTEND : UI
 ## >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: ../backend/docker/Dockerfile.frontend
-    container_name: frontend
-    ports:
-      - "3000:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: http://gateway:8080
-    #depends_on:
-     # - gateway
-    networks:
-      - codeandskills-net
-      # monter le code source directement
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+#  frontend:
+#    build:
+#      context: ./frontend
+#      dockerfile: ../backend/docker/Dockerfile.frontend
+#    container_name: frontend
+#    ports:
+#      - "3000:3000"
+#    environment:
+#      NEXT_PUBLIC_API_URL: http://gateway:8080
+#    #depends_on:
+#     # - gateway
+#    networks:
+#      - codeandskills-net
+#      # monter le code source directement
+#    volumes:
+#      - ./frontend:/app
+#      - /app/node_modules
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
 #   VOLUMES
@@ -198,7 +288,9 @@ services:
 
 volumes:
   pgdata:
-  redis_data: {}
+  pgadmin_data:
+  redis_data:
+  redis_insight:
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
 #   NETWORKS

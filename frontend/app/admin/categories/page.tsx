@@ -7,6 +7,7 @@ import Pagination from "@/components/general/Pagination";
 import {CATEGORIES_PER_PAGE} from "@/constants/admin-contants";
 import {adminGetCategories} from "@/actions/admin/categories";
 import CardError from "@/components/custom-ui/CardError";
+import { Category } from "@/models";
 
 
 const CategoriesPage = async (props: {
@@ -60,7 +61,7 @@ async function RenderCategories({current, nbrPage}: { current?: number | undefin
                 <>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  xl:grid-cols-4 gap-4">
-                        {data?.map((category) => {
+                        {data?.map((category:Category) => {
 
                                 return <AdminCategoryCard key={category.id} {...category} />
                             }

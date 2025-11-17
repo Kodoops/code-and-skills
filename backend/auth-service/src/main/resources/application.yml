@@ -1,30 +1,22 @@
-#datasource:
-#  url: jdbc:h2:mem:testdb
-#  driver-class-name: org.h2.Driver
-#  username: sa
-#  password:
-#jpa:
-#  hibernate:
-#    ddl-auto: create-drop
-#  properties:
-#    hibernate:
-#      dialect: org.hibernate.dialect.H2Dialect
-
 spring:
+  # SPRING CONFIGURATION
   config:
 #    activate:
 #      on-profile: docker
     import: "optional:configserver:"
 
+  # SPRING APPLICATION
   application:
     name: ${APPLICATION_SERVICE_NAME:auth-service}
 
+  # SPRING DATASOURCE
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
+  # SPRING JPA
   jpa:
     hibernate:
       ddl-auto: update
@@ -38,21 +30,27 @@ spring:
         temp.use_jdbc_metadata_defaults: false
         globally_quoted_identifiers: true
 
+  # SPRING DEVTOOLS
   devtools:
     restart:
       enabled: true
 
+# SPRING KAFKA
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092 }
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: true
 
+# SERVER
 server:
   port: ${SERVER_PORT:8081}
   error:
     include-message: always
 
+# SECURITY JWT
 jwt:
   secret:
     current: ${JWT_SECRET_CURRENT:b06aa53d8b9e4c1f9a78b0a1a6ffb7cf1b6c1d99b64a22a7c321f9089cf32aa4}
@@ -61,13 +59,16 @@ jwt:
   refresh:
     expiration: ${JWT_REFRESH_EXPIRATION:604800000 } # 7 jours
 
+# SECURITY  GATEWAY
 gateway:
   trust:
     secret: ${GATEWAY_TRUST_SECRET:s3cr3t_gateway_trust_key_123!}
 
+# SECURITY INTERNAL COM
 internal:
   secret: ${INTERNAL_SECRET:internal-service-secret-key}
 
+# DISCOVERY SERVER
 eureka:
   client:
     fetch-registry: true
@@ -77,6 +78,7 @@ eureka:
   instance:
     prefer-ip-address: true
 
+# ACTUATOR
 management:
   endpoints:
     web:
@@ -89,9 +91,7 @@ management:
     mail:
       enabled: false
 
-front:
-  base-url: ${APP_FRONTEND_URL:http://localhost:3000 }
-
+# APPLICATION PROPERTIES
 app:
-  frontendUrl: ${APP_FRONTEND_URL:http://localhost:3000 }
+  frontendUrl: ${APP_FRONTEND_URL:http://localhost:3000}
   name: ${APP_NAME:CodeAndSkills.com}

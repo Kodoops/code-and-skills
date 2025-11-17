@@ -8,7 +8,7 @@ import {
     EyeIcon,
     MoreVerticalIcon,
     PencilIcon,
-    SchoolIcon, SendIcon,
+    SchoolIcon,
     TimerIcon,
     Trash2Icon
 } from "lucide-react";
@@ -70,7 +70,7 @@ const AdminCourseCard = ({data}:AdminCourseCardProps) => {
                 </DropdownMenu>
             </div>
             <Badge className={"absolute top-2 left-2"}
-                   variant = {data.status=== 'Published' ?"default" : data.status=== 'Draft' ? "secondary" :  "destructive" }
+                   variant = {data.status=== 'PUBLISHED' ?"default" : data.status=== 'DRAFT' ? "destructive" :  "secondary" }
             >
                 {data.status}
             </Badge>
@@ -103,13 +103,6 @@ const AdminCourseCard = ({data}:AdminCourseCardProps) => {
                         </div>
                     </div>
                     <ProductPrice finalPrice={finalPrice} price={data.price!}/>
-                    {/*<div className="flex items-center gap-x-2">*/}
-                    {/*    <IconCash*/}
-                    {/*        className={`size-6 p-1 rounded-md bg-primary/10 ${data.price === 0 ? "text-green-600" : "text-primary"} `}/>*/}
-                    {/*    <p className={`text-xl ${data.price === 0 ? "text-green-600" : "text-primary"} font-semibold`}>*/}
-                    {/*        {data.price !== 0 ? (data.price! / 100).toFixed(2) + " €" : "Gratuit"}*/}
-                    {/*    </p>*/}
-                    {/*</div>*/}
                 </div>
 
                 <Link href={`/admin/courses/${data.id}/edit`} className={buttonVariants({className: "mt-4 w-full"})}>

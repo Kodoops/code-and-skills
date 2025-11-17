@@ -17,25 +17,8 @@ const Page = async ({params}: { params: Params }) => {
     const {data} = await adminGetCourseById(courseId);
     if (!data) notFound();
 
-    // const {prerequisites: preqs, objectives: objs} = data;
-    //
-    // const prerequisites = preqs.map(preq => {
-    //     return {
-    //         content: preq.prerequisite.content,
-    //         id: preq.prerequisite.id,
-    //     }
-    // });
-    // const objectives =  objs.map(obj => {
-    //     return {
-    //         content: obj.objective.content,
-    //         id: obj.objective.id,
-    //     }
-    // });
-
-
     const {data:categories} = await getAllCategories();
 
-   // const ids= data.chapters.map(chapter => chapter.id);
     const quizzes =  null; // await adminGetChaptersQuiz(ids);
 
 

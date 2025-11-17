@@ -39,12 +39,12 @@ const data = {
 
     navMain: [
         {
-            title: "Dashboard",
+            title: "Dashboard (*)",
             url: "/dashboard",
             icon: IconDashboard,
         },
         {
-            title: "My LEarning paths",
+            title: "My Learning paths (*)",
             url: "/dashboard/learning-paths",
             icon: RouteIcon,
         },
@@ -54,12 +54,12 @@ const data = {
             icon: IconListDetails,
         },
         {
-            title: "My Workshops",
+            title: "My Workshops (*)",
             url: "/dashboard/workshops",
             icon: TrafficConeIcon,
         },
         {
-            title: "My Resources",
+            title: "My Resources (*)",
             url: "/dashboard/resources",
             icon: ToolCaseIcon,
         },
@@ -67,7 +67,7 @@ const data = {
     ],
     navAccount:[
         {
-            title: "My Subscriptions",
+            title: "My Subscriptions (*)",
             url: "/dashboard/subscriptions",
             icon: CalendarSyncIcon,
         },{
@@ -76,24 +76,24 @@ const data = {
             icon: Mails,
         },
         {
-            title: "My Invoices",
+            title: "My Invoices (*)",
             url: "/dashboard/invoices",
             icon: IconFileText,
         },
     ],
     navSecondary: [
         {
-            title: "Settings",
+            title: "Settings (*)",
             url: "/dashboard/settings",
             icon: IconSettings,
         },
         {
-            title: "Get Help",
+            title: "Get Help (*)",
             url: "#",
             icon: IconHelp,
         },
         {
-            title: "My Testimonial",
+            title: "My Testimonial (*)",
             url: "/dashboard/my-testimonial",
             icon: MessageSquareMoreIcon,
         },
@@ -103,7 +103,7 @@ const data = {
             icon: NewspaperIcon,
         },
         {
-            title: "/Search",
+            title: "/Search (*)",
             url: "/dashboard/Search",
             icon: IconSearch,
         },

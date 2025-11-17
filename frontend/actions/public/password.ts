@@ -1,14 +1,14 @@
 "use server";
 
 import { AxiosServerClient } from "@/lib/axiosServerClient";
-import { ResponseType } from "@/models";
 import { handleAxiosError } from "@/lib/handleAxiosError";
+import {TypeResponse} from "@/lib/types";
 
 /**
  * 🔹 Étape 1 : Envoi du lien de réinitialisation de mot de passe
  * Endpoint : POST /auth/forgot-password
  */
-export async function forgotPasswordAction(email: string): Promise<ResponseType<null>> {
+export async function forgotPasswordAction(email: string): Promise<TypeResponse<null>> {
     try {
         const client = await AxiosServerClient();
         const res = await client.post("/auth/forgot-password", { email });
@@ -16,7 +16,6 @@ export async function forgotPasswordAction(email: string): Promise<ResponseType<
         return {
             status: "success",
             message:
-                res.data?.message ||
                 res.data?.data ||
                 "Un email de réinitialisation vous a été envoyé si l’adresse est valide.",
             data: null,
@@ -33,7 +32,7 @@ export async function forgotPasswordAction(email: string): Promise<ResponseType<
 export async function resetPasswordAction(
     token: string,
     newPassword: string
-): Promise<ResponseType<null>> {
+): Promise<TypeResponse<null>> {
     if (!token) {
         return {
             status: "error",
@@ -51,7 +50,6 @@ export async function resetPasswordAction(
         return {
             status: "success",
             message:
-                res.data?.message ||
                 res.data?.data ||
                 "Votre mot de passe a été réinitialisé avec succès.",
             data: null,

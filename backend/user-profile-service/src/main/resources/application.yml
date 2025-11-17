@@ -78,9 +78,11 @@ internal:
 
 stripe:
   api:
-    key: ${STRIPE_API_KEY}
+    key: ${STRIPE_API_KEY:}
+  public:
+    key: ${STRIPE_PUBLIC_KEY:}
   webhook:
-    secret : ${STRIPE_WEBHOOK_SECRET}
+    secret : ${STRIPE_WEBHOOK_SECRET:}
 
 eureka:
   client:

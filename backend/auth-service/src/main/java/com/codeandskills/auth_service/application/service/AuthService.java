@@ -36,7 +36,6 @@ public class AuthService {
     private final UserSessionRepository sessionRepository;
     private final VerificationService verificationService;
 
-    // ✅ Enregistrement
     public RegisterResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email already registered");
@@ -59,7 +58,6 @@ public class AuthService {
     }
 
 
-    // ✅ Authentification
     public AuthResponse authenticate(AuthRequest request) {
         try {
             authenticationManager.authenticate(
@@ -80,7 +78,6 @@ public class AuthService {
         return createAuthResponse(user);
     }
 
-    // ✅ Création du JWT et de la session (avec sessionId)
     public AuthResponse createAuthResponse(User user) {
         String refreshToken = UUID.randomUUID().toString();
         UserSession session = UserSession.builder()
@@ -98,8 +95,6 @@ public class AuthService {
     }
 
 
-
-
     @Scheduled(cron = "0 0 0 * * *") // tous les jours à minuit
     public void cleanExpiredSessions() {
         List<UserSession> sessions = sessionRepository.findAll();
@@ -109,7 +104,7 @@ public class AuthService {
         log.info("🧹 Expired sessions cleaned: {}", sessions.size());
     }
 
-    // ✅ Déconnexion (révocation du refresh + session)
+
     @Transactional
     public void logout(String refreshToken) {
         if (refreshToken == null || refreshToken.isBlank()) {
@@ -149,7 +144,6 @@ public class AuthService {
 
     }
 
-    // ✅ Refresh (avec rotation sécurisée)
     public AuthResponse refreshTokens(String oldRefreshToken) {
         UserSession oldSession = sessionRepository.findByRefreshToken(oldRefreshToken)
                 .orElseThrow(() -> new IllegalArgumentException("Refresh token not found"));

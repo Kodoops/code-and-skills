@@ -12,18 +12,18 @@ const EditCategoryPage = async ({params}: { params: Params }) => {
     const {categoryId} = await params;
     if (!categoryId) notFound();
 
-    const data = await adminGetCategoryById(categoryId);
-    if (!data) notFound();
+    const response = await adminGetCategoryById(categoryId);
+    if (!response) notFound();
 
-    const domains = await adminGetAllDomains();
+    const result = await adminGetAllDomains();
 
-    if(!domains )
+    if(!result || result.data?.length === 0 )
         return <div className={"text-destructive text-center p-2"}>Impossible de créer des catégories sans domaines</div>;
 
     return (
         <div>
             <h1 className={"text-xl font-bold mb-8"}>
-                Edit Category : <span className={"text-primary underline"}>{data.title}</span>
+                Edit Category : <span className={"text-primary underline"}>{response.data.title}</span>
             </h1>
             <Card>
                 <CardHeader>
@@ -33,7 +33,7 @@ const EditCategoryPage = async ({params}: { params: Params }) => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {domains && domains?.length !== 0 && <EditCategoryForm data={data} domains={domains}/>}
+                    {result.data && result.data?.length !== 0 && <EditCategoryForm data={response.data} domains={result.data}/>}
                 </CardContent>
             </Card>
         </div>

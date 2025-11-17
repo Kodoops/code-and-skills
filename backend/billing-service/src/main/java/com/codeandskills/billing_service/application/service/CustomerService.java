@@ -20,7 +20,6 @@ public class CustomerService {
     public EnsureCustomerResponse ensureCustomer(String userId) throws Exception {
 
         UserProfileDTO profileDto = userProfileClient.getUserProfileById(new GetPublicUserProfile(userId));
-        log.info("Profile: {}", profileDto);
 
         if (profileDto.getStripeCustomerId() != null) {
             return new EnsureCustomerResponse(profileDto.getStripeCustomerId());
@@ -33,7 +32,8 @@ public class CustomerService {
 
         log.info("Created Stripe customer: {}", customer.getId());
 
-        userProfileClient.updateStripeCustomer(userId, Map.of("stripeCustomerId", customer.getId()));
+        userProfileClient.updateStripeCustomer(userId, customer.getId());
+        //userProfileClient.updateStripeCustomer(userId, Map.of("stripeCustomerId", customer.getId()));
 
         log.info("Updated UserProfile with Stripe customer id: {}", customer.getId());
 

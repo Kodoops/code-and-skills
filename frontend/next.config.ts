@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
                 hostname: 'avatars.githubusercontent.com',
                 port   :'',
                 protocol: 'https',
+            },
+            {
+                hostname: 'codeandskills.s3.eu-west-1.amazonaws.com',
+                port   :'',
+                protocol: 'https',
             }
         ]
     },
