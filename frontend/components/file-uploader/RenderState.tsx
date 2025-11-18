@@ -22,7 +22,7 @@ export function RenderEmptyState({isDragActive}: { isDragActive: boolean }) {
     );
 };
 
-export function RenderErrorState({error}: { error: string }) {
+export function RenderErrorState({error, onRetry}: { error: string ,  onRetry?: () => void}) {
 
     return (
         <div className={"text-center "}>
@@ -38,7 +38,7 @@ export function RenderErrorState({error}: { error: string }) {
             <p className="text-xl mt-3 text-muted-foreground">
                 Click or drag file to retry upload
             </p>
-            <Button className={"mt-4"} type={"button"}>
+            <Button className={"mt-4"} type={"button"}  onClick={onRetry}>
                 Retry File Selection
             </Button>
         </div>
@@ -84,7 +84,8 @@ export function RenderUploadedState({previewUrl, isDeleting, handleRemoveFile, f
 export function RenderUploadingState({progress, file}: { progress: number, file: File }) {
     return <div>
         <div className={"flex items-center justify-center text-center flex-col"}>
-            <p>{progress}</p>
+            {/*<p>{progress}</p>*/}
+            <Loader2 className="h-10 w-10 animate-spin" />
             <p className={"mt-2 text-sm font-medium text-foreground"}>Uploading ...</p>
             <p className={"mt-1 text-xs text-muted-foreground truncate max-w-xs"}>{file.name}</p>
         </div>

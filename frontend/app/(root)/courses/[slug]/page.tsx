@@ -41,7 +41,6 @@ const SingleCoursePage = async ({params}: { params: Params }) => {
     const finalPrice = calculatedPrice(course.price!, course.promotions?.length > 0 ? course.promotions[0]: undefined);
 
     const thumbnailUrl  = useConstructUrl(course.fileKey);
-
     return (
         <div className={"grid grid-cols-1 gap-8 lg:grid-cols-3 mt-5"}>
             <div className="order-1 lg:col-span-2">

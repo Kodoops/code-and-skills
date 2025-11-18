@@ -54,7 +54,7 @@ const AdminCourseCard = ({data}:AdminCourseCardProps) => {
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link href={`/courses/${data.slug}`}>
+                            <Link href={`/admin/courses/${data.id}`}>
                                 <EyeIcon className={"size-4 mr-2"} />
                                 Review Course
                             </Link>

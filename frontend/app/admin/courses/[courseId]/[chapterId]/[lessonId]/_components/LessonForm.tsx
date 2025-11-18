@@ -23,8 +23,6 @@ interface Props {
     courseId: string;
 }
 
-const UPLOAD_COURSES_PATH = "uploads/courses/";
-
 export function LessonForm({data, chapterId, courseId}: Props) {
 
     const [pending, startTransition] = useTransition();
@@ -56,6 +54,8 @@ export function LessonForm({data, chapterId, courseId}: Props) {
             });
         });
     }
+
+    let PRIVATE_COURSE_LESSON_FOLDER = "upload/courses/" + courseId + "/lessons/" + data.id + "/";
 
     return (
         <div className={""}>
@@ -108,8 +108,15 @@ export function LessonForm({data, chapterId, courseId}: Props) {
                                     <FormItem>
                                         <FormLabel>Thumbnail Image </FormLabel>
                                         <FormControl>
-                                            <Uploader onChange={field.onChange} value={field.value} fileTypeAccepted={'image'}
-                                                      folder={UPLOAD_COURSES_PATH + courseId+"/lessons/" + data.id } />
+
+                                            <Uploader
+                                                value={field.value as string}
+                                                onChange={field.onChange}
+                                                fileTypeAccepted="image"
+                                                folder={PRIVATE_COURSE_LESSON_FOLDER}
+                                                fileType="THUMBNAIL"
+                                            />
+
                                         </FormControl>
                                         <FormMessage/>
                                     </FormItem>
@@ -124,9 +131,15 @@ export function LessonForm({data, chapterId, courseId}: Props) {
                                         <FormItem>
                                             <FormLabel>Video File</FormLabel>
                                             <FormControl>
-                                                <Uploader onChange={field.onChange} value={field.value}
-                                                          fileTypeAccepted={'video'}
-                                                          folder={UPLOAD_COURSES_PATH + courseId + "/lessons/" + data.id}/>
+
+                                                <Uploader
+                                                    value={field.value as string}
+                                                    onChange={field.onChange}
+                                                    fileTypeAccepted="video"
+                                                    folder={PRIVATE_COURSE_LESSON_FOLDER}
+                                                    fileType="VIDEO"
+                                                />
+
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>

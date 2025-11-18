@@ -72,7 +72,7 @@ const RenderCourses = async ({filters}: { filters: CourseFilters }) => {
 
             </div>
 
-            {totalPages && totalPages > 1 && <Pagination page={currentPage!} totalPages={totalPages!}/>}
+            {totalPages && totalPages > 1 && <Pagination page={currentPage!+1} totalPages={totalPages!}/>}
         </>
     );
 };

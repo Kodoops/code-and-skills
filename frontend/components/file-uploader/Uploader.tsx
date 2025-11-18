@@ -16,6 +16,7 @@ import { useConstructUrl} from "@/hooks/use-construct-url";
 import {Card, CardContent} from "@/components/ui/card";
 import {cn} from "@/lib/utils";
 import { apiDeleteFile, apiUploadFile} from "@/components/file-uploader/fileApi";
+//import { apiDeleteFileClient, apiUploadFileClient } from "@/components/file-uploader/fileApi.client";
 
 export type UploaderFileType = "image" | "video" | "file";
 
@@ -119,137 +120,6 @@ const Uploader = (
             };
         });
     }, [value, fileUrl]);
-
-    // ✅ Nouvelle version : utilise  backend Spring
-    // const uploadFile = useCallback(
-    //     async (file: File) => {
-    //         setFileState((prev) => ({
-    //             ...prev,
-    //             uploading: true,
-    //             progress: 0,
-    //         }));
-    //
-    //         try {
-    //             const effectiveFolder = folder ?? "uploads";
-    //             const effectiveFileType =
-    //                 fileTypeAccepted === "image"
-    //                     ? "IMAGE"
-    //                     : fileTypeAccepted === "video"
-    //                         ? "VIDEO"
-    //                         : "FILE";
-    //
-    //
-    //             // 1️⃣ Appel à /files/user/presign-upload
-    //             const presign = await apiPresignUpload({
-    //                 fileName: file.name,
-    //                 folder: effectiveFolder,
-    //                 contentType: file.type,
-    //                 size: file.size,
-    //                 isImage: fileTypeAccepted === "image",
-    //                 isVideo: fileTypeAccepted === "video",
-    //                 fileType: "GENERIC", // ou COURSE_THUMBNAIL, AVATAR...
-    //             });
-    //
-    //            // const { url, key } = presign;
-    //
-    //             // 2️⃣ Upload direct vers S3 via l'URL présignée
-    //             // await new Promise((resolve, reject) => {
-    //             //     const xhr = new XMLHttpRequest();
-    //             //
-    //             //     xhr.upload.onprogress = (event) => {
-    //             //         if (event.lengthComputable) {
-    //             //             const percentageCompleted = Math.round((event.loaded * 100) / event.total);
-    //             //             setFileState((prev) => ({
-    //             //                 ...prev,
-    //             //                 progress: percentageCompleted,
-    //             //             }));
-    //             //         }
-    //             //     }
-    //             //
-    //             //     xhr.onload = () => {
-    //             //         if (xhr.status === 200 || xhr.status === 204) {
-    //             //             resolve(xhr.response);
-    //             //         } else {
-    //             //             setFileState((prev) => ({
-    //             //                 ...prev,
-    //             //                 uploading: false,
-    //             //                 progress: 0,
-    //             //                 error: true,
-    //             //             }));
-    //             //
-    //             //             reject(new Error("Onload: Failed to upload file"));
-    //             //         }
-    //             //     }
-    //             //
-    //             //     xhr.onerror = (e) => {
-    //             //         setFileState((prev) => ({
-    //             //             ...prev,
-    //             //             uploading: false,
-    //             //             progress: 0,
-    //             //             error: true,
-    //             //         }));
-    //             //
-    //             //         reject(new Error("Error: Failed to upload file"));
-    //             //     }
-    //             //
-    //             //     xhr.open("PUT", url);
-    //             //     xhr.setRequestHeader("Content-Type", file.type);
-    //             //     xhr.send(file);
-    //             // });
-    //
-    //             const uploaded = await apiUploadFile({
-    //                 file,
-    //                 folder: effectiveFolder,
-    //                 fileType: file.type, //effectiveFileType,
-    //                 onProgress: (pct) => {
-    //                     setFileState((prev) => ({
-    //                         ...prev,
-    //                         progress: pct,
-    //                     }));
-    //                 },
-    //             });
-    //
-    //             const key = uploaded.key;
-    //
-    //             // 3️⃣ Confirm upload côté backend
-    //             await apiConfirmUpload({
-    //                 key,
-    //                 size: file.size,
-    //                 contentType: file.type,
-    //                 originalFileName: file.name,
-    //             });
-    //
-    //             // 4️⃣ OK → on met à jour l'état & on remonte la valeur
-    //             setFileState((prev) => ({
-    //                 ...prev,
-    //                 progress: 100,
-    //                 uploading: false,
-    //                 key,
-    //                 objectUrl: link, // permet l'aperçu
-    //             }));
-    //
-    //             const link = constructUrl(key);
-    //             onChange?.(link ?? "");
-    //
-    //             toast.success("File uploaded successfully", {
-    //                 style: {background: "#D1FAE5", color: "#065F46"},
-    //             });
-    //
-    //         } catch (e) {
-    //             console.log(e)
-    //             toast.error(" Failed to upload file", {
-    //                 style: {background: "#FEE2E2", color: "#991B1B"},
-    //             });
-    //             setFileState((prev) => ({
-    //                 ...prev,
-    //                 uploading: false,
-    //                 progress: 0,
-    //                 error: true,
-    //             }));
-    //         }
-    //     }
-    //     , [onChange, fileTypeAccepted]
-    // );
 
     // 👉 upload = un seul appel backend qui fait TOUT (S3 + DB)
     const uploadFile = useCallback(
@@ -426,6 +296,7 @@ const Uploader = (
             return (
                 <RenderErrorState
                     error={"Failed to upload file"}
+                    onRetry={open}
                 />
             )
         }
@@ -453,7 +324,7 @@ const Uploader = (
         }
     }, [fileState.objectUrl])
 
-    const {getRootProps, getInputProps, isDragActive} = useDropzone(
+    const {getRootProps, getInputProps, isDragActive, open} = useDropzone(
         {
             onDrop,
             accept: fileTypeAccepted ? acceptMap[fileTypeAccepted] : undefined,
@@ -461,7 +332,7 @@ const Uploader = (
             multiple: multiple,
             maxSize: fileTypeAccepted ? sizeMap[fileTypeAccepted] : FILE_MAX_FILE_SIZE,
             onDropRejected: rejectFile,
-            disabled: fileState.uploading || !!fileState.objectUrl,
+            disabled: fileState.uploading || (!!fileState.objectUrl && !fileState.error),
         }
     )
 

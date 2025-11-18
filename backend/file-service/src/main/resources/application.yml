@@ -30,7 +30,14 @@ spring:
     restart:
       enabled: true
 
+  servlet:
+    multipart:
+      max-file-size: 5GB      # taille max d'un fichier
+      max-request-size: 5GB   # taille max de la requête
+
 server:
+  tomcat:
+    max-swallow-size: -1        # évite certains 413 côté Tomcat sur gros uploads
   port: ${SERVER_PORT}
   error:
     include-message: always

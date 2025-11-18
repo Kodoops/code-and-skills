@@ -107,6 +107,7 @@ const CoursesFilterBar = ({current, categories}: Props) => {
                         <SelectValue placeholder="Niveau"/>
                     </SelectTrigger>
                     <SelectContent>
+                        <SelectItem value="all">Tous</SelectItem>
                         {LEVELS.map((lvl) => (
                             <SelectItem key={lvl} value={lvl}>
                                 {lvl}

@@ -2,6 +2,7 @@ import React from 'react';
 import UserSVG from "@/components/custom-ui/UserSVG";
 import {RatingStars} from "@/components/custom-ui/RatingStars";
 import Image from "next/image";
+import {useConstructUrl} from "@/hooks/use-construct-url";
 
 interface Props {
     name: string;
@@ -12,11 +13,14 @@ interface Props {
 }
 
 const AuthorBanner = ({name, title,description, rating, avatar  }:Props) => {
+
+    const avatarUrl = useConstructUrl(avatar??"");
+
     return (
         <div className="border rounded-lg p-4 bg-muted-foreground/10 flex items-center gap-6 ">
             {avatar ?
                 <div  className=" bg-muted-foreground/10 rounded-full border-2 p-0.5 ">
-                    <Image src={avatar} alt={"avatar" + name} width={64} height={64} className="rounded-full  "/>
+                    <Image src={avatarUrl} alt={"avatar" + name} width={64} height={64} className="rounded-full aspect-square "/>
                 </div>
                 : <div  className=" bg-muted-foreground/10 rounded-full border-2 p-0.5 ">
                     <UserSVG/>
