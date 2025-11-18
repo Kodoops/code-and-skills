@@ -1,0 +1,11 @@
+# application-docker.yml
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://postgres:5432/codeandskills}
+  jpa:
+    hibernate:
+      ddl-auto: validate

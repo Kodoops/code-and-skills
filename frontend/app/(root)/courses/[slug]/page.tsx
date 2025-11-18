@@ -18,6 +18,7 @@ import {adminGetCourseBySlug} from "@/actions/public/course";
 import { notFound } from 'next/navigation';
 import ObjectivesAndRequisites from "@/components/custom-ui/ObjectivesAndRequisites";
 import {checkIfCourseBought} from "@/actions/auth/course";
+import {useConstructUrl} from "@/hooks/use-construct-url";
 
 type Params = Promise<{ slug: string }>
 
@@ -39,12 +40,13 @@ const SingleCoursePage = async ({params}: { params: Params }) => {
 
     const finalPrice = calculatedPrice(course.price!, course.promotions?.length > 0 ? course.promotions[0]: undefined);
 
+    const thumbnailUrl  = useConstructUrl(course.fileKey);
 
     return (
         <div className={"grid grid-cols-1 gap-8 lg:grid-cols-3 mt-5"}>
             <div className="order-1 lg:col-span-2">
                 <div className="relative aspect-video w-full overflow-hidden rounded-xl shadow-lg">
-                    <Image src={course.fileKey}
+                    <Image src={thumbnailUrl}
                            alt={course.title} fill className={"object-cover"}
                            priority
                     />

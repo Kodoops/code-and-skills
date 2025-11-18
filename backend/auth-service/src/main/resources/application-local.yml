@@ -1,0 +1,16 @@
+# --spring.profiles.active=local
+
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  jpa:
+    hibernate:
+      ddl-auto: update   # en dev on autorise l'update
+    show-sql: true
+
+logging:
+  level:
+    com.codeandskills: DEBUG
+    org.springframework.security: DEBUG

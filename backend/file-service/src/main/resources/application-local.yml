@@ -1,0 +1,10 @@
+# application-local.yml
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  jpa:
+    hibernate:
+      ddl-auto: update   # en dev
+    show-sql: true

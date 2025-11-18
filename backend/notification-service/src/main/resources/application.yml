@@ -1,33 +1,19 @@
-#datasource:
-#  url: jdbc:h2:mem:testdb
-#  driver-class-name: org.h2.Driver
-#  username: sa
-#  password:
-#jpa:
-#  hibernate:
-#    ddl-auto: create-drop
-#  properties:
-#    hibernate:
-#      dialect: org.hibernate.dialect.H2Dialect
-
 spring:
   config:
-#    activate:
-#      on-profile: docker
     import: "optional:configserver:"
 
   application:
     name: ${APPLICATION_SERVICE_NAME:notification-service}
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
-    username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
@@ -35,28 +21,30 @@ spring:
         format_sql: true
         use_sql_comments: true
         jdbc.lob.non_contextual_creation: true
-        temp.use_jdbc_metadata_defaults: false
+        boot:
+          allow_jdbc_metadata_access: true
         globally_quoted_identifiers: true
 
   mail:
-    host: ${SMTP_HOST:localhost} # smtp4dev
-    port: ${SMTP_PORT:2525}
+    host: ${SMTP_HOST}
+    port: ${SMTP_PORT}
     username: ${SMTP_USER}
     password: ${SMTP_PASSWORD}
     properties:
       mail:
         smtp:
           auth: false
-          starttls.enable: false
+          starttls:
+            enable: false
 
   devtools:
     restart:
       enabled: true
 
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
-      group-id: ${KAFKA_CONSUMER_GROUP_ID:notification-service-group}
+      group-id: ${KAFKA_CONSUMER_GROUP_ID}
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
@@ -70,12 +58,12 @@ spring:
       type: single
 
 app:
-  frontendUrl: ${APP_FRONTEND_URL:http://localhost:3000}
-  name: ${APP_NAME:CodeAndSkills.com}
+  frontendUrl: ${APP_FRONTEND_URL}
+  name: ${APP_NAME}
 
 
 server:
-  port: ${SERVER_PORT:8083}
+  port: ${SERVER_PORT}
   error:
     include-message: always
 
@@ -84,24 +72,24 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     service-url:
-      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:8761/eureka/}
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE}
   instance:
     prefer-ip-address: true
 
 jwt:
   secret:
-    current: ${JWT_SECRET_CURRENT:b06aa53d8b9e4c1f9a78b0a1a6ffb7cf1b6c1d99b64a22a7c321f9089cf32aa4}
-    previous: ${JWT_SECRET_PREVIOUS:7f98bb23f7f3d5d4c78aa81a03aa46bc993b1b7b72e671b3c4f3c7655bc6219a }
-  expiration: ${JWT_EXPIRATION:3600000 }   # 1h
+    current: ${JWT_SECRET_CURRENT}
+    previous: ${JWT_SECRET_PREVIOUS:${JWT_SECRET_CURRENT} }
+  expiration: ${JWT_EXPIRATION}
   refresh:
-    expiration: ${JWT_REFRESH_EXPIRATION:604800000 } # 7 jours
+    expiration: ${JWT_REFRESH_EXPIRATION}
 
 gateway:
   trust:
-    secret: ${GATEWAY_TRUST_SECRET:s3cr3t_gateway_trust_key_123!}
+    secret: ${GATEWAY_TRUST_SECRET}
 
 internal:
-  secret: ${INTERNAL_SECRET:internal-service-secret-key}
+  secret: ${INTERNAL_SECRET}
 
 management:
   endpoints:
@@ -115,8 +103,8 @@ management:
     mail:
       enabled: false
 
-
 logging:
   level:
+    com.codeandskills: DEBUG
     org.springframework.kafka: DEBUG
     org.apache.kafka: INFO

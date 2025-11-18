@@ -118,6 +118,7 @@ export const learningPathItemSchema =z.object({
 })
 
 export const courseSchema =z.object({
+    id: z.string().optional(),
     title: z.string().min(3, {message:'Title must be at least 3 characters long'}).max(100, {message:'Title must be most 100 characters long ... '}),
     description: z.string().min(3, {message:'Description must be at least 3 characters long'}),
     fileKey: z.string().min(1, {message:'File is required'}),

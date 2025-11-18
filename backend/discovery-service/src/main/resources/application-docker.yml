@@ -1,0 +1,17 @@
+spring:
+  main:
+    banner-mode: "off"
+
+logging:
+  level:
+    root: INFO
+
+server:
+  port: ${SERVER_PORT:8761}
+
+eureka:
+  instance:
+    hostname: discovery-service
+  client:
+    register-with-eureka: false
+    fetch-registry: false

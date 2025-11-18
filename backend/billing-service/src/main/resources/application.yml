@@ -3,7 +3,7 @@ spring:
     import: "optional:configserver:"
 
   application:
-      name: ${APPLICATION_SERVICE_NAME:learning-analytics-service}
+    name: ${APPLICATION_SERVICE_NAME:billing-service}
 
   datasource:
     url: ${DB_URL}
@@ -50,9 +50,17 @@ jwt:
   secret:
     current: ${JWT_SECRET_CURRENT}
     previous: ${JWT_SECRET_PREVIOUS:${JWT_SECRET_CURRENT} }
-  expiration: ${JWT_EXPIRATION}
+  expiration: ${JWT_EXPIRATION }
   refresh:
     expiration: ${JWT_REFRESH_EXPIRATION}
+
+stripe:
+  api:
+    key: ${STRIPE_API_KEY}
+  public:
+    key: ${STRIPE_PUBLIC_KEY}
+  webhook:
+    secret: ${STRIPE_WEBHOOK_SECRET}
 
 gateway:
   trust:
@@ -60,7 +68,6 @@ gateway:
 
 internal:
   secret: ${INTERNAL_SECRET}
-
 
 eureka:
   client:
@@ -83,12 +90,18 @@ management:
     mail:
       enabled: false
 
+services:
+  user-profile-service:
+    url: ${USER_PROFILE_SERVICE_URL:http://localhost:8080/api}
+  catalog-service:
+    url: ${CATALOG_SERVICE_URL:http://localhost:8080/api}
+
 app:
   frontendUrl: ${APP_FRONTEND_URL}
   name: ${APP_NAME}
 
 logging:
   level:
+    org.springframework.security: DEBUG
+    feign: DEBUG
     com.codeandskills: DEBUG
-    org.springframework.security: INFO
-    org.springframework.kafka: INFO

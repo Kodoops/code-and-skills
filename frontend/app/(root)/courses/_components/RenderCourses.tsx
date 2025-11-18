@@ -33,7 +33,7 @@ const RenderCourses = async ({filters}: { filters: CourseFilters }) => {
 
     let enrolledByUser: Enrollment[] = [];
 
-    if(response?.status === "success") {
+    if(res?.status === "success") {
         enrolledByUser = res?.data ?? [];
     }
 

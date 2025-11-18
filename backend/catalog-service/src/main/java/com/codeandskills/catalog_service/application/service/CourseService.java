@@ -131,7 +131,7 @@ public class CourseService {
      * 🔧 Crée un nouveau cours
      */
     @Transactional
-    public CourseDTO createCourse(Course course) {
+    public CourseDTO createCourse(Course course, String courseId) {
 
         if (courseRepository.existsBySlug(course.getSlug())) {
             throw new IllegalArgumentException("Slug already exists");
@@ -141,6 +141,9 @@ public class CourseService {
             throw new IllegalArgumentException("Title already exists");
         }
 
+        if (courseId != null) {
+            course.setId(courseId);
+        }
         course.setStatus(CourseStatus.DRAFT);
         Course saved = courseRepository.save(course);
 

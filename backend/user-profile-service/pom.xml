@@ -102,13 +102,6 @@
 			<version>${mapstruct.version}</version>
 		</dependency>
 
-		<!-- .ENV -->
-		<dependency>
-			<groupId>io.github.cdimascio</groupId>
-			<artifactId>dotenv-java</artifactId>
-			<version>${dotenv-java.version}</version>
-		</dependency>
-
 		<!-- Dev  Tools -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -1,0 +1,14 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  jpa:
+    hibernate:
+      ddl-auto: update   # en dev on laisse Hibernate gérer les migrations auto
+    show-sql: true
+
+logging:
+  level:
+    com.codeandskills.user_profile_service: DEBUG
+    org.springframework.security: DEBUG

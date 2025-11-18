@@ -11,6 +11,7 @@ import {calculatedPrice} from "@/lib/price";
 import ProductPrice from '@/components/custom-ui/ProductPrice';
 import { Course } from '@/models';
 import {levelBgColors} from "@/lib/types";
+import {useConstructUrl} from "@/hooks/use-construct-url";
 
 interface Props {
     data: Course
@@ -20,7 +21,7 @@ interface Props {
 const PublicCourseCard = ({data, isEnrolled}:Props) => {
 
     const finalPrice = calculatedPrice(data.price!, data?.promotions?.[0])
-
+    const thumbnailUrl  = useConstructUrl(data.fileKey);
     return (
         <Card className={"group  py-0 gap-0"}>
             <div className="relative flex-1">
@@ -32,7 +33,7 @@ const PublicCourseCard = ({data, isEnrolled}:Props) => {
                 >
                     {data.level}
                 </Badge>
-                <Image src={data.fileKey} alt={data.title} width={600} height={400} className={"w-full rounded-t-xl aspect-video h-full object-cover"}/>
+                <Image src={thumbnailUrl} alt={data.title} width={600} height={400} className={"w-full rounded-t-xl aspect-video h-full object-cover"}/>
             </div>
             <CardContent className={"p-4 flex-1"}>
                 <Link href={`/courses/${data.slug}`}

@@ -1,0 +1,14 @@
+spring:
+  devtools:
+    restart:
+      enabled: true
+  main:
+    banner-mode: console
+
+logging:
+  level:
+    root: INFO
+    com.codeandskills: DEBUG
+
+server:
+  port: ${SERVER_PORT:8761}

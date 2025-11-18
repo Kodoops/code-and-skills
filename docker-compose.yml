@@ -1,5 +1,4 @@
 services:
-
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
   #   INFRASTRUCTURE
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
@@ -195,6 +194,8 @@ services:
       retries: 10
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      SERVER_PORT: 8761
+      APPLICATION_SERVICE_NAME: discovery-service
     networks:
       - codeandskills-net
     # monter le code source directement

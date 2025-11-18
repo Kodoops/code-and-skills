@@ -7,6 +7,7 @@ import com.codeandskills.catalog_service.domain.model.*;
 import com.codeandskills.catalog_service.infrastructure.web.dto.CourseRequest;
 import com.codeandskills.common.response.ApiResponse;
 import com.codeandskills.common.response.PagedResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +50,7 @@ public class AdminCourseController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<CourseDTO>> create(@RequestBody CourseRequest request,
+    public ResponseEntity<ApiResponse<CourseDTO>> create(@Valid  @RequestBody CourseRequest request,
                                                          @RequestHeader("X-User-Id") String userId,
                                                          @RequestHeader("X-User-Role") String role) {
 
@@ -76,7 +77,8 @@ public class AdminCourseController {
                         .userId(request.userId())
                         .category(category.get())
                       //  .status(CourseStatus.valueOf(request.status().toUpperCase()))
-                        .build()
+                        .build(),
+                request.id()
         );
         return ResponseEntity.ok(
                 ApiResponse.success(201, "Cours créé avec succès", created)

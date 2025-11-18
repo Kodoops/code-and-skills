@@ -110,7 +110,7 @@ export async function getAllEnrolledCoursesByUser(): Promise<TypeResponse<Enroll
 
     try {
         const client = await AxiosServerClient();
-        const res = await client.get<ApiResponse<Enrollment[]>>(`/billing/enrollments/user/${user?.id}/active`);
+        const res = await client.get<ApiResponse<Enrollment[]>>(`/billing/enrollments/user/${user?.userId}/active`);
 
         if (!res.data?.success || !res.data.data) {
             return {

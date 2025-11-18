@@ -77,6 +77,7 @@ const EditCourseForm = ({data, categories}:EditCourseFormProps) => {
     }
 
 
+    let PUBLIC_COURSE_THUMBNAILS_FOLDER= `public/courses/${data.id}/`;
     return (
         <Form {...form} >
             <form className={"space-y-6"}
@@ -157,7 +158,13 @@ const EditCourseForm = ({data, categories}:EditCourseFormProps) => {
                         <FormItem className={"w-full"}>
                             <FormLabel>Thumbnail Image</FormLabel>
                             <FormControl>
-                                <Uploader onChange={field.onChange} value={field.value} fileTypeAccepted={'image'}/>
+                                <Uploader
+                                    value={field.value as string}
+                                    onChange={field.onChange}
+                                    fileTypeAccepted="image"
+                                    folder={PUBLIC_COURSE_THUMBNAILS_FOLDER}
+                                    fileType="THUMBNAIL"
+                                />
                             </FormControl>
                             <FormMessage/>
                         </FormItem>

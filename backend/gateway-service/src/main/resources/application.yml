@@ -1,22 +1,15 @@
-
-gateway:
-  trust:
-    secret: ${GATEWAY_TRUST_SECRET:s3cr3t_gateway_trust_key_123!}
-  session:
-    status-url: lb://auth-service/internal/sessions/{sessionId}/status
-
-internal:
-  secret: ${INTERNAL_SECRET:internal-service-secret-key}
-
 spring:
   main:
     web-application-type: reactive
+
   application:
     name: ${APPLICATION_SERVICE_NAME:gateway-service}
+
   data:
     redis:
-      host: ${DATA_REDIS_HOST:localhost}
-      port: ${DATA_REDIS_PORT:6379}
+      host: ${DATA_REDIS_HOST}
+      port: ${DATA_REDIS_PORT}
+
   config:
     import: "optional:configserver:"
 
@@ -124,8 +117,6 @@ spring:
           metadata:
             sensitive-headers: [ ]
 
-
-  # CORS simple
   webflux:
     cors:
       mappings:
@@ -135,7 +126,7 @@ spring:
           allowedHeaders: "*"
 
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT}
   error:
     whitelabel:
       enabled: false
@@ -145,7 +136,7 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     service-url:
-      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE:http://localhost:8761/eureka/}
+      defaultZone: ${EUREKA_CLIENT_DEFAULT_ZONE}
   instance:
     prefer-ip-address: true
 
@@ -164,11 +155,12 @@ management:
 # ====== Sécurité JWT côté gateway ======
 jwt:
   secret:
-    current: ${JWT_SECRET_CURRENT:b06aa53d8b9e4c1f9a78b0a1a6ffb7cf1b6c1d99b64a22a7c321f9089cf32aa4}
-    previous: ${JWT_SECRET_PREVIOUS:7f98bb23f7f3d5d4c78aa81a03aa46bc993b1b7b72e671b3c4f3c7655bc6219a }
-  expiration: ${JWT_EXPIRATION:3600000 }   # 1h
+    current: ${JWT_SECRET_CURRENT}
+    previous: ${JWT_SECRET_PREVIOUS:${JWT_SECRET_CURRENT}}
+  expiration: ${JWT_EXPIRATION}
   refresh:
-    expiration: ${JWT_REFRESH_EXPIRATION:604800000 } # 7 jours
+    expiration: ${JWT_REFRESH_EXPIRATION}
+
   public-paths:
     # variantes /api/*
     - /api/auth/login
@@ -179,16 +171,17 @@ jwt:
     - /api/auth/reset-password
     - /api/actuator/**
 
-    # Billing  publics (ajout important)
+    # Billing  publics
     - /api/billing/customers/ensure
     - /api/billing/webhook
 
-    # Profile User publics (ajout important)
+
+    # Profile User publics
     - /api/profiles/public/**
     - /profiles/public/**
     - /api/profiles/user/*/stripe-customer
 
-    # Catalog publics (ajout important)
+    # Catalog publics
     - /api/catalog/public/**
     - /catalog/public/**
 #      - /api/catalog/courses
@@ -229,6 +222,16 @@ jwt:
     - /billing/webhook
 
 
+gateway:
+  trust:
+    secret: ${GATEWAY_TRUST_SECRET}
+  session:
+    status-url: lb://auth-service/internal/sessions/{sessionId}/status
+
+internal:
+  secret: ${INTERNAL_SECRET}
+
 logging:
   level:
     org.springframework.cloud.gateway.filter.ratelimit: DEBUG
+    com.codeandskills.gateway_service: DEBUG

@@ -29,6 +29,7 @@ import {adminCreateCourse} from "@/actions/admin/course";
 import {useSession} from "@/hooks/useSession";
 import {handleActionResult} from "@/lib/handleActionResult";
 import Uploader from "@/components/file-uploader/Uploader";
+import { v4 as uuidv4 } from "uuid";
 
 interface CreateCoursePageProps {
     categories: { id: string; slug: string; title: string }[];
@@ -47,6 +48,7 @@ const CreateCoursePage =  ( { categories , levels, status}:CreateCoursePageProps
     const form = useForm<CourseSchema>({
         resolver: zodResolver(courseSchema) as Resolver<CourseSchema>,
         defaultValues: {
+            id:uuidv4(),
             title: "",
             slug: "",
             smallDescription: "",
@@ -92,6 +94,8 @@ const CreateCoursePage =  ( { categories , levels, status}:CreateCoursePageProps
     }
 
 
+    const uuid = uuidv4()
+    let PUBLIC_COURSE_THUMBNAILS_FOLDER=`public/courses/${form.getValues().id}` ;
 
     return (
         <>
@@ -190,8 +194,15 @@ const CreateCoursePage =  ( { categories , levels, status}:CreateCoursePageProps
                                     <FormItem className={"w-full"}>
                                         <FormLabel>Thumbnail Image</FormLabel>
                                         <FormControl>
-                                            <Uploader onChange={field.onChange} value={field.value}
-                                                      fileTypeAccepted={'image'}/>
+
+                                            <Uploader
+                                                value={field.value as string}
+                                                onChange={field.onChange}
+                                                fileTypeAccepted="image"
+                                                folder={PUBLIC_COURSE_THUMBNAILS_FOLDER}
+                                                fileType="THUMBNAIL"
+                                            />
+
                                         </FormControl>
                                         <FormMessage/>
                                     </FormItem>
