@@ -63,7 +63,7 @@ const PublicCourseCard = ({data, isEnrolled}:Props) => {
                         Watch Course
                     </Link>
                     :
-                    <Link href={`/courses/${data.slug}`} className={buttonVariants({className: "w-full h-16 mt-4 ",
+                    <Link href={`/courses/${data.slug}`} className={buttonVariants({className: "w-full h-12  mt-4 ",
                         variant: "default"})}>Learn
                         More</Link>
                 }

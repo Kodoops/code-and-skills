@@ -43,8 +43,6 @@ const CreateCoursePage =  ( { categories , levels, status}:CreateCoursePageProps
     const router = useRouter();
     const {triggerConfetti} = useConfetti();
 
-    console.log(user)
-
     const form = useForm<CourseSchema>({
         resolver: zodResolver(courseSchema) as Resolver<CourseSchema>,
         defaultValues: {
@@ -77,7 +75,7 @@ const CreateCoursePage =  ( { categories , levels, status}:CreateCoursePageProps
 
     function onSubmit(values: CourseSchema) {
         startTransition(async () => {
-            console.log("values: ", values, "user:", user)
+
             const result = await adminCreateCourse(values);
 
             handleActionResult(result, {

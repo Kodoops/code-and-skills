@@ -16,7 +16,7 @@ const FeaturesPage = async (props: {
 }) => {
 
     const params = await props.searchParams;
-    const page = parseInt(params?.page ?? "1", 10);
+    const page = parseInt(params?.page ?? "0", FEATURES_PER_PAGE);
     return (
         <>
             <div className="flex items-center justify-between">
@@ -37,7 +37,7 @@ export default FeaturesPage;
 
 async function RenderFeatures({current, nbrPage}: { current?: number | undefined, nbrPage: number }) {
 
-    const response = await getFeatures({page:current, size:nbrPage});
+    const response = await getFeatures(current, nbrPage);
 
     if(response.status==="error"){
         return <CardError message={response.message } title={"Erreur chargement des features"} />

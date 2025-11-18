@@ -201,8 +201,9 @@ jwt:
     # Content publics
     - /api/content/features
     - /content/features
-    - /api/content/pages
-    - /content/pages
+    - /api/content/pages/**
+    - /content/pages/**
+
     - /api/content/companies/links
     - /content/companies/links
     - /api/content/companies/links/unlinked

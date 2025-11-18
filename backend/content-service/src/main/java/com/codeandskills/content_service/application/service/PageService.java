@@ -18,8 +18,11 @@ public interface PageService {
 
     Optional<PageDTO> getBySlug(String slug);
 
-    List<PageDTO> getAll();
+    PagedResponse<PageDTO> getAll(int page, int size, String type);
 
     PagedResponse<PageDTO> getAllPaged(int page, int size);
 
+    List<PageDTO> getPagesByType(String type);
+
+    PageDTO getPagesBySlug(String slug);
 }

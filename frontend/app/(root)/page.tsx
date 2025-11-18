@@ -23,13 +23,13 @@ import {LearningPathSkeletonSimpleCard} from "@/app/(root)/_components/LearningP
 
 import { getPopularCategories, getRandomCategories} from "@/actions/public/category";
 import {getRecentCourses} from "@/actions/public/course";
-import {getAllFeatures} from "@/actions/feature";
 import {getAllTestimonials} from "@/actions/testimonials";
 import {getFeaturedLearningPaths} from "@/actions/learning-path";
 import {Course, Enrollment, LearningPath} from "@/models";
 import {getAllEnrolledCoursesByUser} from "@/actions/auth/course";
 import CardError from "@/components/custom-ui/CardError";
 import {FEATURES_PER_PAGE} from "@/constants/user-contants";
+import {getFeatures} from "@/actions/public/feature";
 
 
 export default async function Home() {
@@ -245,7 +245,7 @@ function CategoriesLoadingSkeletonLayout() {
 }
 
 async function RenderFeatures() {
-    const result = await getAllFeatures(0, FEATURES_PER_PAGE)
+    const result = await getFeatures(0, FEATURES_PER_PAGE)
 
     if(! result || !result.data) {
         <CardError  message={result.message} title={"Error Features"} />

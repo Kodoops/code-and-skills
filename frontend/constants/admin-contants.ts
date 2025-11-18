@@ -18,3 +18,6 @@ export const FEATURES_PER_PAGE = 12;
 export const QUIZ_PER_PAGE = 12;
 export const NEWSLETTER_PER_PAGE = 20;
 export const SUBSCRIPTIONS_PER_PAGE = 8;
+export const PAGES_PER_PAGE = 6;
+
+

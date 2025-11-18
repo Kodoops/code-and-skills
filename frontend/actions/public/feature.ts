@@ -7,24 +7,15 @@ import {handleAxiosError} from "@/lib/handleAxiosError";
 /**
  * 🌍 Récupère la liste paginée et filtrée des features publics
  */
-export async function getFeatures({
+export async function getFeatures(
                                      page = 0,
                                      size = FEATURES_PER_PAGE,
-                                 }: {
-    page?: number;
-    size?: number;
-}): Promise<TypeResponse<PagedResponse<Feature> | null>> {
+): Promise<TypeResponse<PagedResponse<Feature> | null>> {
     try {
         const client = await AxiosServerClient();
-
-        const params: Record<string, any> = {
-            page: page - 1,
-            size,
-        };
-
         const res = await client.get<ApiResponse<PagedResponse<Feature>>>(
             "/content/features",
-            {params}
+            { params: { page, size } }
         );
 
         if (!res.data?.success || !res.data.data) {

@@ -5,7 +5,7 @@ import AppLogoShape from "@/components/custom-ui/AppLogoShape";
 import NavContent from "@/app/(root)/_components/NavContent";
 import {CompanySocialLinks} from "@/app/(root)/_components/CompanySocialLinks";
 import AppLogoText from "@/components/custom-ui/AppLogoText";
-import {getPageLinks} from "@/actions/page";
+import {getPageLinks} from "@/actions/public/page";
 import {CompanySocialLink, Page} from "@/models";
 import {getCompanySocialLinks} from "@/actions/public/social-networks";
 
@@ -13,7 +13,11 @@ const Footer = async () => {
 
     const response = await getCompanySocialLinks();
     const socials: CompanySocialLink[] = response.data ? response.data : [];
-    const links: Page[] = await getPageLinks("Footer");
+    const resp = await getPageLinks("Footer");
+    let links : Page[] =[];
+    if(resp && resp.status === "success")
+        links = resp.data;
+     //links = resp.data.filter(page => page.slug !== "home")
 
     return (
         <footer className="border-t border-border py-10">

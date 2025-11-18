@@ -1,15 +1,15 @@
 "use client";
 import React from "react";
 
-import {FeaturedType} from "@/lib/db/types.ts";
 import CarouselGrid from "@/app/(root)/_components/CarouselGrid";
 import FeatureCard from "@/app/(root)/_components/FeatureCard";
+import {Feature} from "@/models";
 
 export default function FeaturedCarouselClient({
                                                   items,
                                                   perPage = 3,
                                               }: {
-    items: FeaturedType[];
+    items: Feature[];
     perPage?: number;
 }) {
     return (

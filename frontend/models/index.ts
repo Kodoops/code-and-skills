@@ -2,6 +2,9 @@
 // SITE OCNFIG
 // -----------------------------------
 
+export const PAGE_TYPES = ["footer"];
+
+
 export type Feature = {
     id: string;
     title: string;
@@ -16,8 +19,8 @@ export type Feature = {
 
 export type Page = {
     id: string
-    createdAt: Date
-    updatedAt: Date
+    createdAt: string
+    updatedAt: string
     title: string
     slug: string
     type: string

@@ -81,7 +81,7 @@ export default function FeatureCard({
             {/*    className={cn(palette.text)}*/}
             </CardHeader>
             <CardContent>
-                <p className="text-muted-foreground">{desc}</p>
+                <p className="text-muted-foreground line-clamp-3">{desc}</p>
             </CardContent>
         </Card>
     );

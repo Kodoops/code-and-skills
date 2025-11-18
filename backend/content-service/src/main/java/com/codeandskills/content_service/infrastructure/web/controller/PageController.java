@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/content/pages")
@@ -25,6 +27,23 @@ public class PageController {
         PagedResponse<PageDTO> filteredFeatures = pageService.getAllPaged(page, size);
 
         return ResponseEntity.ok(ApiResponse.success(200, "Pages fetched successfully", filteredFeatures));
+    }
+
+
+    @GetMapping("/type")
+    public ResponseEntity<ApiResponse<List<PageDTO>>> getFooterPages(@RequestParam(name = "type", required = true) String type) {
+
+        List<PageDTO> filteredFeatures = pageService.getPagesByType(type.toLowerCase());
+
+        return ResponseEntity.ok(ApiResponse.success(200, "Footer Pages fetched successfully", filteredFeatures));
+    }
+
+    @GetMapping("/{slug}")
+    public ResponseEntity<ApiResponse<PageDTO>> getPageBySlug(@PathVariable String slug) {
+
+        PageDTO filteredFeatures = pageService.getPagesBySlug(slug);
+
+        return ResponseEntity.ok(ApiResponse.success(200, "Footer Pages fetched successfully", filteredFeatures));
     }
 
 }

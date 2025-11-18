@@ -1,11 +1,9 @@
 package com.codeandskills.content_service.application.service.impl;
 
 import com.codeandskills.common.response.PagedResponse;
-import com.codeandskills.content_service.application.dto.FeatureDTO;
 import com.codeandskills.content_service.application.dto.PageDTO;
 import com.codeandskills.content_service.application.mapper.PageMapper;
 import com.codeandskills.content_service.application.service.PageService;
-import com.codeandskills.content_service.domain.model.Feature;
 import com.codeandskills.content_service.domain.model.Page;
 import com.codeandskills.content_service.domain.repository.PageRepository;
 import jakarta.transaction.Transactional;
@@ -53,22 +51,45 @@ public class PageServiceImpl implements PageService {
 
     @Override
     public Optional<PageDTO> getById(String id) {
-        return pageRepository.findById(id)
-                .map(pageMapper::toDto);
+        Optional<Page> page =  pageRepository.findById(id);
+        if (page.isEmpty()){
+            throw new IllegalArgumentException("Page not found ");
+        }
+         return page.map(pageMapper::toDto);
     }
 
     @Override
     public Optional<PageDTO> getBySlug(String slug) {
-        return pageRepository.findBySlug(slug)
-                .map(pageMapper::toDto);
+        Optional<Page> page = pageRepository.findBySlug(slug);
+
+        if (page.isEmpty()){
+            throw new IllegalArgumentException("Page not found ");
+        }
+        return page.map(pageMapper::toDto);
     }
 
     @Override
-    public List<PageDTO> getAll() {
-        return pageRepository.findAll()
+    public PagedResponse<PageDTO> getAll(int page, int size, String type) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        org.springframework.data.domain.Page<Page> pages = null;
+        if(type == null) {
+             pages = pageRepository.findAll(pageable);
+        }else
+         pages = pageRepository.findByType(type, pageable);
+
+        List<PageDTO> dtos = pages.getContent()
                 .stream()
                 .map(pageMapper::toDto)
                 .toList();
+
+        return new PagedResponse<>(
+                dtos,
+                page,
+                pages.getTotalPages(),
+                size,
+                pages.getTotalElements()
+        );
     }
 
     @Override
@@ -89,5 +110,22 @@ public class PageServiceImpl implements PageService {
                 features.getTotalElements()
         );
 
+    }
+
+    @Override
+    public List<PageDTO> getPagesByType(String type) {
+
+        return pageRepository.findByType(type).stream()
+                .map(pageMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public PageDTO getPagesBySlug(String slug) {
+        Optional<Page> bySlug = pageRepository.findBySlug(slug);
+        if(bySlug.isPresent()) {
+            return pageMapper.toDto(bySlug.get());
+        }
+        throw new IllegalArgumentException("Page not found.");
     }
 }

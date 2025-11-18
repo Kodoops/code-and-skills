@@ -17,13 +17,11 @@ interface Props {
 }
 
 const CourseProgressCard = ({data}:Props) => {
- //   const thumbnailURl = useConstructUrl(data.fileKey);
-   // const {totalLessons, progressPercentage, completedLessons} = useCourseProgress({courseData : data})
     const progress = useCourseProgress({ courseData: data });
 
-    const reloadProgress = useCallback(() => {
-        progress.reload();
-    }, [progress]);
+    // const reloadProgress = useCallback(() => {
+    //     progress.reload();
+    // }, [progress]);
 
 
     return (
@@ -57,18 +55,18 @@ const CourseProgressCard = ({data}:Props) => {
                         className="flex-1 border border-muted-foreground/10 pb-4 p-1 bg-muted-foreground/10 rounded-lg">
                         <div className="flex justify-between items-center mb-1 text-sm">
                             <p className={"text-xs text-muted-foreground"}>
-                                Progress
+                                Progress ( {progress.completedLessons} of {progress.totalLessons} lessons completed )
                             </p>
                             <p className="font-medium text-xs">{progress.progressPercentage ? progress.progressPercentage.toFixed(0) : 0}%</p>
                         </div>
                         <Progress value={progress.progressPercentage || 0} className={"h-1.5 "}/>
-                        <p className={"text-xs text-muted-foreground mt-1"}>
-                            {progress.completedLessons} of {progress.totalLessons} lessons completed
-                        </p>
+                        {/*<p className={"text-xs text-muted-foreground mt-1"}>*/}
+                        {/*    {progress.completedLessons} of {progress.totalLessons} lessons completed*/}
+                        {/*</p>*/}
 
                     </div>
                     <Link href={`/dashboard/courses/${data.slug}`}
-                          className={buttonVariants({className: "h-16 ", variant: "blue"})}>
+                          className={buttonVariants({className: " h-12", variant: "blue"})}>
                         <PlayIcon className={"size-6"}/>
                     </Link>
                 </div>

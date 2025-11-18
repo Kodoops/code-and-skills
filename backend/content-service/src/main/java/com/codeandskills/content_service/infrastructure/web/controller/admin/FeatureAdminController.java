@@ -24,7 +24,6 @@ public class FeatureAdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        List<FeatureDTO> features = featureService.getAll();
 
         PagedResponse<FeatureDTO> filteredFeatures = featureService.getAllPaged(page, size);
 

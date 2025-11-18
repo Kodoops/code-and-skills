@@ -34,7 +34,7 @@ import {
   GroupIcon,
   RouteIcon,
   TrafficConeIcon,
-  ToolCaseIcon, BookOpenCheck, Newspaper, Mails, WalletIcon, CalendarSyncIcon
+  ToolCaseIcon, BookOpenCheck, Newspaper, Mails, WalletIcon, CalendarSyncIcon, FileTextIcon
 } from "lucide-react";
 import {NavCS} from "@/components/sidebar/nav-cs";
 
@@ -109,6 +109,11 @@ const data = {
       title: "Social links",
       url: "/admin/social-links",
       icon: SocialLink,
+    },
+    {
+      title: "pages",
+      url: "/admin/pages",
+      icon: FileTextIcon,
     },
   ],
   navBilling:[

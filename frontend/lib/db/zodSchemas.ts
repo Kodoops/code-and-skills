@@ -315,7 +315,7 @@ export const pageLinkSchema = z.object({
     title: z.string().min(3, "Veuillez saisir au moins (3) caractères."),
     slug: z.string().min(3, "Veuillez saisir au moins (3) caractères."),
     content: z.string().min(3, "Veuillez saisir au moins (3) caractères."),
-    type: z.string().min(1, "Veuillez saisir au moins (3) caractères."),
+    type: z.string().optional(),
 
 });
 
@@ -366,15 +366,9 @@ export type ChangePasswordSchema = z.infer<typeof changePasswordSchema>;
 export type UpdateProfileSchema = z.infer<typeof updateProfileSchema>;
 
 
-export type LearningPathSchema = z.infer<typeof learningPathSchema>
-export type LearningPathItemSchema = z.infer<typeof learningPathItemSchema>
 export type CourseSchema = z.infer<typeof courseSchema>
 export type ChapterSchema = z.infer<typeof chapterSchema>
 export type LessonSchema = z.infer<typeof lessonSchema>
-export type WorkshopSchema = z.infer<typeof workshopSchema>
-export type WorkshopStatementSchema = z.infer<typeof workshopStatementSchema>
-export type WorkshopSolutionSchema = z.infer<typeof workshopSolutionSchema>
-export type ResourceSchema = z.infer<typeof resourceSchema>
 export type CategorySchema = z.infer<typeof categorySchema>
 export type DomainSchema = z.infer<typeof domainSchema>
 export type TagSchema = z.infer<typeof tagSchema>
@@ -382,15 +376,21 @@ export type FeatureSchema = z.infer<typeof featureSchema>
 export type CompanySchema = z.infer<typeof companySchema>
 export type SocialLinkSchema = z.infer<typeof socialLinkSchema>
 export type CompanySocialLinkSchema = z.infer<typeof companySocialLinkSchema>
-export type ObjectiveRequisiteSchema = z.infer<typeof objectiveRequisiteSchema>
-export type QuizSchema = z.infer<typeof quizSchema>
-export type QuizQuestionSchema = z.infer<typeof quizQuestionSchema>
-export type QuizOptionSchema = z.infer<typeof quizOptionSchema>
 export type AttachQuizFormToCourse = z.infer<typeof attachQuizFormToCourse>
-export type TestimonialFormSchema = z.infer<typeof testimonialFormSchema>
 export type PageLinkSchema = z.infer<typeof pageLinkSchema>
 export type NewsletterSchema = z.infer<typeof newsletterSchema>
 export type ContactMessageSchema = z.infer<typeof contactMessageSchema>
 export type ReplyContactMessageSchema = z.infer<typeof replyContactMessageSchema>
+export type LearningPathSchema = z.infer<typeof learningPathSchema>
+export type LearningPathItemSchema = z.infer<typeof learningPathItemSchema>
+export type WorkshopSchema = z.infer<typeof workshopSchema>
+export type WorkshopStatementSchema = z.infer<typeof workshopStatementSchema>
+export type WorkshopSolutionSchema = z.infer<typeof workshopSolutionSchema>
+export type ResourceSchema = z.infer<typeof resourceSchema>
+export type ObjectiveRequisiteSchema = z.infer<typeof objectiveRequisiteSchema>
+export type QuizSchema = z.infer<typeof quizSchema>
+export type QuizQuestionSchema = z.infer<typeof quizQuestionSchema>
+export type QuizOptionSchema = z.infer<typeof quizOptionSchema>
+export type TestimonialFormSchema = z.infer<typeof testimonialFormSchema>
 export type SubscriptionPlanSchema = z.infer<typeof subscriptionPlanSchema>
 export type ContactQuotationSchema = z.infer<typeof contactQuotationSchema>
