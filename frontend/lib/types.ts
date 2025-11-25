@@ -10,11 +10,13 @@ export type TypeResponse<T> =
     status: "success";
     message: string;
     data: T;
+    code?: number;
 }
     | {
     status: "error";
     message: string;
     data: null | T;
+    code?: number;
 };
 
 /**
@@ -52,6 +54,38 @@ export interface ApiError {
 }
 
 
+
+export type SimpleStatistics = {
+    courses: number,
+    lessons: number,
+    quizzes: number
+}
+
+
+export type CatalogResponseStats ={
+    coursesCount: number;
+    publishedCoursesCount: number;
+    draftCoursesCount: number;
+    archivedCoursesCount: number;
+    chaptersCount: number;
+    videosCount: number;
+    lessonsCount: number;
+    categoriesCount:number;
+    domainsCount:number;
+    //  learningPathsCount: number;
+    //  workshopsCount: number;
+}
+
+
+export type ProfileResponseStats ={
+    usersCount: number;
+    premiumUsersCount: number;
+
+}
+
+export type BillingResponseStats ={
+    customersCount: number;
+}
 
 export const colorClasses: Record<string, { bg: string; text: string }> = {
     primary: {bg: "bg-primary/10", text: "text-primary"},

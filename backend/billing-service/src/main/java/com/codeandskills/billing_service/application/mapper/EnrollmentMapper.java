@@ -12,7 +12,8 @@ public class EnrollmentMapper {
                 .amount(e.getAmount())
                 .currency(e.getPayment() != null ? e.getPayment().getCurrency() : "EUR")
                 .course(course)
-                .courseId(e.getCourseId())
+                .referenceId(e.getReferenceId())
+                .type(e.getType())
                 .payment(e.getPayment() != null
                         ? EnrollmentDTO.PaymentInfo.builder()
                         .id(e.getPayment().getId())
@@ -29,7 +30,8 @@ public class EnrollmentMapper {
                 .status(e.getStatus().name())
                 .amount(e.getAmount())
                 .currency(e.getPayment() != null ? e.getPayment().getCurrency() : "EUR")
-                .courseId(e.getCourseId())
+                .referenceId(e.getReferenceId())
+                .type(e.getType())
                 .payment(e.getPayment() != null
                         ? EnrollmentDTO.PaymentInfo.builder()
                         .id(e.getPayment().getId())

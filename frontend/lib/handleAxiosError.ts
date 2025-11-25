@@ -5,12 +5,16 @@ export function handleAxiosError<T>(
     error: unknown,
     defaultMessage = "Une erreur est survenue"
 ): TypeResponse<T> {
+
+
     if (error instanceof AxiosError) {
         // 🔹 Cas 1 : le backend a répondu avec une erreur structurée
         if (error.response) {
+
             const backendError = error.response.data;
             return {
                 status: "error",
+                code:error.response.status,
                 message:
                     backendError?.message ||
                     backendError?.error ||

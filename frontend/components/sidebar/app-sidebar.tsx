@@ -34,15 +34,16 @@ import {
   GroupIcon,
   RouteIcon,
   TrafficConeIcon,
-  ToolCaseIcon, BookOpenCheck, Newspaper, Mails, WalletIcon, CalendarSyncIcon, FileTextIcon
+  ToolCaseIcon, BookOpenCheck, Newspaper, Mails, WalletIcon, CalendarSyncIcon, FileTextIcon, BadgeEuroIcon
 } from "lucide-react";
 import {NavCS} from "@/components/sidebar/nav-cs";
+import {Business} from "@/components/sidebar/business";
 
 const data = {
 
   navMain: [
     {
-      title: "Dashboard (*)",
+      title: "Dashboard",
       url: "/admin",
       icon: IconDashboard,
     },
@@ -129,10 +130,22 @@ const data = {
     },
 
   ],
+    business:[
+      {
+        title: "Ventes",
+        url: "/admin/sales",
+        icon: BadgeEuroIcon,
+      },
+    ],
   navSecondary: [
     {
       title: "Messages",
       url: "/admin/messages",
+      icon: Mails,
+    },
+    {
+      title: "Testimonials (*)",
+      url: "/admin/testimonials",
       icon: Mails,
     },
     {
@@ -141,7 +154,7 @@ const data = {
       icon: Newspaper,
     },
     {
-      title: "Settings (*)",
+      title: "Settings",
       url: "/admin/settings",
       icon: IconSettings,
     },
@@ -177,17 +190,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="space-y-0">
         <NavMain items={data.navMain}/>
-        <Separator className="mt-4"/>
+        <Separator className="mt-2"/>
         <span>Organisation</span>
         <NavOrga items={data.navOrga}/>
-        <Separator className="mt-4"/>
+        <Separator className="mt-2"/>
         <span>Subscriptions</span>
         <NavCS items={data.navBilling}/>
-        <Separator className="mt-4"/>
+        <Separator className="mt-2"/>
         <span>Code & Skills</span>
         <NavCS items={data.navCS}/>
+        <Separator className="mt-2"/>
+        <span>Business</span>
+        <Business items={data.business}/>
+        <Separator className="mt-2"/>
         <NavSecondary items={data.navSecondary} className="mt-auto"/>
       </SidebarContent>
       <SidebarFooter>

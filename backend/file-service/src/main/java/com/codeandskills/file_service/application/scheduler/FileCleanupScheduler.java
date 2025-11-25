@@ -12,6 +12,8 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Slf4j
@@ -29,9 +31,12 @@ public class FileCleanupScheduler {
     public void cleanupExpiredPendingFiles() {
         log.info("🧹 Running cleanup of expired pending uploads...");
 
-        Instant limit = Instant.now().minus(Duration.ofMinutes(30)); // ou config
+        //Instant limit = Instant.now().minus(Duration.ofMinutes(30)); // ou config
+        LocalDateTime threshold = LocalDateTime
+                .now(ZoneOffset.UTC)
+                .minusMinutes(30);
 
-        List<StoredFile> expiredFiles = repository.findExpiredPendingFiles(limit);
+        List<StoredFile> expiredFiles = repository.findExpiredPendingFiles(threshold);
         if (expiredFiles.isEmpty()) {
             return;
         }
@@ -40,6 +45,7 @@ public class FileCleanupScheduler {
 
         expiredFiles.forEach(file -> {
             storageService.deleteFile(file.getKey());
+           // repository.delete(file);
             //file.setStatus(FileStatus.DELETED); // ou un champ deleted = true
         });
 

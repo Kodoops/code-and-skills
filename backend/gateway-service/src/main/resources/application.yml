@@ -209,6 +209,8 @@ jwt:
     - /api/content/companies/links/unlinked
     - /content/companies/links/unlinked
     - /content/companies/company
+    - /api/content/companies/company/public
+    - /content/companies/company/public
 
     # variantes sans /api (après StripPrefix)
     - /auth/login

@@ -30,7 +30,7 @@ import {
     NewspaperIcon,
     RouteIcon,
     ToolCaseIcon,
-    TrafficConeIcon
+    TrafficConeIcon, UserIcon
 } from "lucide-react";
 import {NavAccount} from "@/components/sidebar/nav-account";
 import {Separator} from "@/components/ui/separator";
@@ -39,7 +39,7 @@ const data = {
 
     navMain: [
         {
-            title: "Dashboard (*)",
+            title: "Dashboard",
             url: "/dashboard",
             icon: IconDashboard,
         },
@@ -76,20 +76,20 @@ const data = {
             icon: Mails,
         },
         {
-            title: "My Invoices (*)",
+            title: "My Invoices",
             url: "/dashboard/invoices",
             icon: IconFileText,
         },
     ],
     navSecondary: [
         {
-            title: "Settings (*)",
+            title: "Settings",
             url: "/dashboard/settings",
             icon: IconSettings,
         },
         {
-            title: "Get Help (*)",
-            url: "#",
+            title: "Get Help",
+            url: "/contact",
             icon: IconHelp,
         },
         {
@@ -103,10 +103,15 @@ const data = {
             icon: NewspaperIcon,
         },
         {
-            title: "/Search (*)",
-            url: "/dashboard/Search",
-            icon: IconSearch,
+            title: "My Profile",
+            url: "/dashboard/profile",
+            icon: UserIcon,
         },
+        // {
+        //     title: "/Search (*)",
+        //     url: "/dashboard/Search",
+        //     icon: IconSearch,
+        // },
     ],
 }
 

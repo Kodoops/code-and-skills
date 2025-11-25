@@ -47,6 +47,7 @@ export async function getAllCategories(): Promise<TypeResponse<Category[] | null
         if (!res.data?.success || !res.data.data) {
             return {
                 status: "error",
+                code: res.data.status,
                 message: res.data?.message || "Erreur lors de la récupération des catégories",
                 data: null,
             };
@@ -54,6 +55,7 @@ export async function getAllCategories(): Promise<TypeResponse<Category[] | null
 
         return {
             status: "success",
+            code: res.data.status,
             message: res.data.message || "Catégories récupérées avec succès",
             data: res.data.data,
         };

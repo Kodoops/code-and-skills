@@ -58,13 +58,20 @@ services:
     ports:
       - "1080:80"   # interface web
       - "2525:25"   # port SMTP
-    healthcheck:
-      test: [ "CMD-SHELL", "wget -qO- http://localhost/ || exit 1" ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+#    healthcheck:
+#      test: [ "CMD-SHELL", "wget -qO- http://localhost/ || exit 1" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 10
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -fsS http://localhost/ || exit 1" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 10
     networks:
       - codeandskills-net
+    volumes:
+      - smtp-dp-keys:/root/.aspnet/DataProtection-Keys
     profiles: [ "infra" ]
 
   # cache server BD
@@ -180,30 +187,30 @@ services:
   #  MICROSERVICES
   # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
 
-  discovery-service:
-    build:
-      context: ./backend
-      dockerfile: docker/Dockerfile.discovery
-    container_name: discovery-service
-    ports:
-      - "8761:8761"
-    healthcheck:
-      test: [ "CMD-SHELL", "wget -qO- http://localhost:8761 || exit 1" ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SERVER_PORT: 8761
-      APPLICATION_SERVICE_NAME: discovery-service
-    networks:
-      - codeandskills-net
-    # monter le code source directement
-    volumes:
-      - ./backend/discovery-service:/app/discovery-service
-      - ./backend/common:/app/common
-      - ~/.m2:/root/.m2   # ✅ ce volume permet d’utiliser ton repo Maven local
-    profiles: ["services"]
+#  discovery-service:
+#    build:
+#      context: ./backend
+#      dockerfile: docker/Dockerfile.discovery
+#    container_name: discovery-service
+#    ports:
+#      - "8761:8761"
+#    healthcheck:
+#      test: [ "CMD-SHELL", "wget -qO- http://localhost:8761 || exit 1" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 10
+#    environment:
+#      SPRING_PROFILES_ACTIVE: docker
+#      SERVER_PORT: 8761
+#      APPLICATION_SERVICE_NAME: discovery-service
+#    networks:
+#      - codeandskills-net
+#    # monter le code source directement
+#    volumes:
+#      - ./backend/discovery-service:/app/discovery-service
+#      - ./backend/common:/app/common
+#      - ~/.m2:/root/.m2   # ✅ ce volume permet d’utiliser ton repo Maven local
+#    profiles: ["services"]
 
 #  gateway:
 #    build:
@@ -292,6 +299,7 @@ volumes:
   pgadmin_data:
   redis_data:
   redis_insight:
+  smtp-dp-keys:
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
 #   NETWORKS

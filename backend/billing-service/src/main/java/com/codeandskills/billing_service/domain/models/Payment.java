@@ -3,6 +3,8 @@ package com.codeandskills.billing_service.domain.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "payments")
 @Getter
@@ -19,13 +21,15 @@ public class Payment extends BaseEntity{
     private String referenceId; // courseId (ou learningPathId)
 
     @Column(nullable = false)
-    private String type; // "COURSE", "SUBSCRIPTION", ...
+    @Enumerated(EnumType.STRING)
+    private InvoiceItemType type; // "COURSE", "SUBSCRIPTION", ...
 
     private String stripeId;       // checkout session id
     private String stripePaymentIntentId;
+    private String stripeRefundId;
 
     @Column(nullable = false)
-    private Integer amount;
+    private BigDecimal amount;
 
     @Column(nullable = false)
     private String currency;

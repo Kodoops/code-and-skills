@@ -199,10 +199,11 @@ export type  Enrollment = {
     amount: number;
     status: string; // EnrollmentStatusEnum
 
-    courseId: String;
+    referenceId: String;
+    type:string;
     course?: Course;
-    // learningPath?: LearningPath;
-    // workshop?: Workshop;
+    learningPath?: LearningPath;
+    workshop?: Workshop;
     // user: UserProfile;
     // payment?: Payment;
 
@@ -432,4 +433,53 @@ export type Promotion = {
     course: Course;
     workshop: Workshop;
     learningPath: LearningPath;
+}
+
+
+export type Invoice = {
+    id: string;
+    paymentId:string
+    invoiceNumber: string;
+    amount: number;// total TTC en centimes
+    currency: string;
+    taxRate : number;
+    taxAmount : number;
+    description: string;
+    pdfUrl?: string;
+    status: string;
+    date: string;
+    createdAt: string;
+    tenantId: string;
+    //userId: string;
+
+    items: InvoiceItem[];
+
+}
+
+export type  InvoiceItem = {
+    id: string;
+    //invoiceId: string;
+    invoice: Invoice;
+    title: string;
+    type: string; // InvoiceItemEnum
+    referenceId: string;
+    quantity: number;
+    unitPrice: number; // centimes
+    total: number; // unitPrice * quantity
+}
+
+export interface Payment {
+    id: string;
+    userId: string;
+    referenceId: string;
+    type: string;
+    stripeId?: string | null;
+    stripePaymentIntentId?: string | null;
+    amount: string; // ou number selon ton mapper
+    currency: string;
+    status: string;
+    method?: string | null;
+    receiptUrl?: string | null;
+    createdAt: string;
+    updatedAt: string;
 }

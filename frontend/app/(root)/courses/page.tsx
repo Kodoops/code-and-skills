@@ -1,10 +1,11 @@
 import CoursesFilterBar from './_components/CoursesFilterBar';
 import RenderCourses from "@/app/(root)/courses/_components/RenderCourses";
-import { Suspense } from "react";
+import React, { Suspense } from "react";
 import { PublicCourseCardSkeleton } from "@/app/(root)/_components/PublicCourseCard";
 import {getAllCategories} from "@/actions/public/category";
 import {COURSES_PER_PAGE} from "@/constants/user-contants";
 import CardError from "@/components/custom-ui/CardError";
+import EmptyState from "@/components/general/EmptyState";
 
 
 const CoursesPage = async (props: {
@@ -33,7 +34,17 @@ const CoursesPage = async (props: {
     const result = await getAllCategories();
 
     if(!result) {
-        return <CardError message={"Impossible de réccupérer les cétagories"} title={"Erreur de chargement"} />
+        return  <EmptyState
+            title={"Erreur du service des catégories"}
+            description={ "Service is temporarily unavailable "}
+        />;
+    }
+
+    if(result.status !== "success") {
+        return  <EmptyState
+            title={"Erreur du service des cours"}
+            description={ result.code && result.code===503 ? "Service is temporarily unavailable ":result.message}
+        />;
     }
 
     return (

@@ -7,8 +7,13 @@
 <body>
 <div class="container">
     <h2>Bonjour <span th:text="${userName}">Utilisateur</span> 💸</h2>
-    <p>Votre paiement de <strong th:text="${amount}"></strong> <span th:text="${currency}"></span> a été remboursé.</p>
+    <p>Suite a votre demande nous avons éfféctué le remboursement de votre achats sur note site d'une valeur de =  <strong th:text="${amount}"></strong> <span th:text="${currency}"></span>.</p>
     <p>Raison : <span th:text="${reason}">Remboursement de commande</span></p>
+    <p>Vous retouverez les détails dans votre espace sur notre site</p>
+
+    <hr/>
+    <p>Cordialement, </p>
+    <p>Service client</p>
 </div>
 </body>
 </html>

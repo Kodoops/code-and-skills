@@ -19,19 +19,43 @@ public class PaymentEventProducer {
 
     // ✅ Paiement réussi
     public void publishPaymentSucceeded(PaymentSucceededEvent event) {
-        kafkaTemplate.send(PAYMENT_SUCCEEDED, event);
-        log.info("📤 [Kafka] PaymentSucceededEvent publié : {}", event);
+        kafkaTemplate.send(PAYMENT_SUCCEEDED, event).whenComplete((result, ex) -> {
+            if (ex != null) {
+                log.error("❌ [Kafka] Erreur envoi PaymentSucceededEvent : {}", ex.getMessage(), ex);
+            } else {
+                log.info("📤 [Kafka] PaymentSucceededEvent publié sur topic={} partition={} offset={}",
+                        result.getRecordMetadata().topic(),
+                        result.getRecordMetadata().partition(),
+                        result.getRecordMetadata().offset());
+            }
+        });
     }
 
     // 💥 Paiement échoué
     public void publishPaymentFailed(PaymentFailedEvent event) {
-        kafkaTemplate.send(PAYMENT_FAILED, event);
-        log.warn("📤 [Kafka] PaymentFailedEvent publié : {}", event);
+        kafkaTemplate.send(PAYMENT_FAILED, event).whenComplete((result, ex) -> {
+            if (ex != null) {
+                log.error("❌ [Kafka] Erreur envoi PaymentFailedEvent : {}", ex.getMessage(), ex);
+            } else {
+                log.info("📤 [Kafka] PaymentFailedEvent publié sur topic={} partition={} offset={}",
+                        result.getRecordMetadata().topic(),
+                        result.getRecordMetadata().partition(),
+                        result.getRecordMetadata().offset());
+            }
+        });
     }
 
     // 💸 Paiement remboursé
     public void publishPaymentRefunded(PaymentRefundedEvent event) {
-        kafkaTemplate.send(PAYMENT_REFUNDED, event);
-        log.info("📤 [Kafka] PaymentRefundedEvent publié : {}", event);
+        kafkaTemplate.send(PAYMENT_REFUNDED, event).whenComplete((result, ex) -> {
+            if (ex != null) {
+                log.error("❌ [Kafka] Erreur envoi PaymentRefundedEvent : {}", ex.getMessage(), ex);
+            } else {
+                log.info("📤 [Kafka] PaymentRefundedEvent publié sur topic={} partition={} offset={}",
+                        result.getRecordMetadata().topic(),
+                        result.getRecordMetadata().partition(),
+                        result.getRecordMetadata().offset());
+            }
+        });
     }
 }

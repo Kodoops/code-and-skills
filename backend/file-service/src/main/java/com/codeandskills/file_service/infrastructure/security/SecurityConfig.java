@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .addFilterBefore(gatewayAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(securityDebugFilter, GatewayAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/files/internal/**").permitAll()
                         .requestMatchers("/files/user/**").authenticated()
                         .requestMatchers("/files/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/actuator/**").hasAuthority("ROLE_ADMIN")

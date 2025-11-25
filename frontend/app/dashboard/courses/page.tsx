@@ -2,9 +2,9 @@ import EmptyState from "@/components/general/EmptyState";
 import CourseProgressCard from "@/app/dashboard/courses/[slug]/_components/CourseProgressCard";
 import Pagination from "@/components/general/Pagination";
 import {COURSES_PER_PAGE} from "@/constants/user-contants";
-import {Suspense} from "react";
+import React, {Suspense} from "react";
 import {PublicCourseCardSkeleton} from "@/app/(root)/_components/PublicCourseCard";
-import {Course} from "@/models";
+import {Course, Enrollment} from "@/models";
 import {getEnrolledCourses} from "@/actions/auth/course";
 
 
@@ -15,7 +15,7 @@ export default async function EnrolledCoursesUserPage(props: {
 }) {
 
     const params = await props.searchParams;
-    const page = parseInt(params?.page ?? "1", 10);
+    const page = parseInt(params?.page ?? "1", COURSES_PER_PAGE);
 
     return (
         <>
@@ -27,19 +27,29 @@ export default async function EnrolledCoursesUserPage(props: {
             </div>
 
             <Suspense fallback={<UserCourseCardSkeletonLayout/>}>
-                <RenderCourses current={page} nbrPage={COURSES_PER_PAGE}/>
+                <RenderCourses current={page-1} nbrPage={COURSES_PER_PAGE}/>
             </Suspense>
         </>
     )
 }
 
 async function RenderCourses({current, nbrPage}:{current?: number | undefined, nbrPage: number}) {
-    const {data:enrolledCourses, totalPages, perPage, page:currentPage} = await getEnrolledCourses(current, nbrPage);
+   const response = await getEnrolledCourses(current, nbrPage);
+
+    if(!response || response.status !== "success") {
+        return  <EmptyState
+            title={"No Enrolled Courses Found"}
+            description={ response.code && (response.code===503 || response.code===401) ? "Service is temporarily unavailable ":response.message}
+        />;
+    }
+    
+
+    const {content:enrolledCourses, totalPages, perPage, currentPage, totalElements} = response.data as unknown as {content: Enrollment[], totalPages: number, perPage: number, currentPage: number, totalElements: number};
 
     return (
         <>
             {
-                enrolledCourses.length === 0 ? (
+               enrolledCourses && enrolledCourses.length === 0 ? (
                     <EmptyState
                         title={"No Courses Found"}
                         description={"You don't have any courses yet. Enroll in a course to get started."}
@@ -50,7 +60,7 @@ async function RenderCourses({current, nbrPage}:{current?: number | undefined, n
                     <>
 
                         <div className={"grid grid-cols-1 md:grid-cols-3 gap-6"}>
-                            {enrolledCourses.map((item) => {
+                            {enrolledCourses && enrolledCourses.map((item:Enrollment) => {
 
                                 if(!item) return null;
 
@@ -58,7 +68,7 @@ async function RenderCourses({current, nbrPage}:{current?: number | undefined, n
                             })}
                         </div>
 
-                        {totalPages > 1 && <Pagination page={currentPage} totalPages={totalPages}/>}
+                        {totalPages > 1 && <Pagination page={currentPage +1} totalPages={totalPages}/>}
                     </>
                 )
             }

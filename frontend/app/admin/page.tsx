@@ -1,5 +1,4 @@
 import {ChartAreaInteractive} from "@/components/sidebar/chart-area-interactive"
-import {SectionCards} from "@/components/sidebar/section-cards"
 
 
 import React, {Suspense} from "react";
@@ -9,16 +8,36 @@ import EmptyState from "@/components/general/EmptyState";
 import AdminCourseCard, {AdminCourseCardSkeleton} from "@/app/admin/courses/_components/AdminCourseCard";
 import {adminGetEnrollmentsStats} from "@/actions/admin/enrollement";
 import {getRecentCourses} from "@/actions/public/course";
+import {AdminCoursesCards} from "@/app/admin/_components/admin-courses-cards";
+import CardError from "@/components/custom-ui/CardError";
+import AdminEnrollmentsCards from "@/app/admin/_components/admin-enrollments-cards";
+import {AdminUsersCards} from "@/app/admin/_components/admin-users-cards";
+import AdminCardStatsSkeletonLayout from "@/app/admin/_components/AdminCardStatsSkeletonLayout";
+import {AdminCustomersCards} from "@/app/admin/_components/admin-customers-cards";
 
 export default async function AdminIndexPage() {
 
-    const enrollments = await adminGetEnrollmentsStats();
-
     return (
         <>
-            <SectionCards/>
+            <Suspense fallback={<AdminCardStatsSkeletonLayout />}>
+                <AdminCoursesCards/>
+            </Suspense>
 
-            <ChartAreaInteractive data={enrollments}/>
+            <Suspense fallback={<AdminCardStatsSkeletonLayout />}>
+                <AdminUsersCards/>
+            </Suspense>
+
+            <Suspense fallback={<AdminCardStatsSkeletonLayout />}>
+                <AdminCustomersCards/>
+            </Suspense>
+
+            <Suspense fallback={<AdminCardStatsSkeletonLayout />}>
+            <AdminEnrollmentsCards />
+            </Suspense>
+
+            <Suspense fallback={<RenderEnrollmentChartSkeletonLayout />}>
+                <EnderEnrollmentsChart />
+            </Suspense>
 
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -32,10 +51,21 @@ export default async function AdminIndexPage() {
                 <Suspense fallback={<RenderRecentCoursesSkeletonLayout />}>
                     <RenderRecentCourses/>
                 </Suspense>
-
             </div>
         </>
     )
+}
+
+async function EnderEnrollmentsChart() {
+    const response = await adminGetEnrollmentsStats();
+
+    if(!response || response.status !== "success"){
+        return <CardError message={"Impossible de charger les statistiques des enrollments."} title={"Erreur Chargement..."}/>
+    }
+
+    const enrollments = response.data;
+
+    return <ChartAreaInteractive data={enrollments}/>
 }
 
 async function RenderRecentCourses() {
@@ -67,6 +97,15 @@ function RenderRecentCoursesSkeletonLayout(){
             {Array.from({length: 2}).map((_, index) => (
                 <AdminCourseCardSkeleton key={index}/>
             ))}
+        </div>
+    )
+}
+
+
+function RenderEnrollmentChartSkeletonLayout(){
+    return (
+        <div className="grid grid-cols-1  ">
+                <AdminCourseCardSkeleton />
         </div>
     )
 

@@ -50,7 +50,7 @@ public class JwtGlobalFilter implements GlobalFilter {
         final String path = exchange.getRequest().getURI().getPath();
 
         // ✅ 1) Laisse passer les routes internes mais ajoute toujours la signature
-        if (path.startsWith("/internal/")) {
+        if ( path.startsWith("/internal/") || path.startsWith("/api/files/internal")  || path.startsWith("/files/internal")) {
             ServerWebExchange mutated = addGatewaySignature(exchange);
             return chain.filter(mutated);
         }

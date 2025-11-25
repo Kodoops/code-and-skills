@@ -1,11 +1,12 @@
 "use server"
 
-import {Course, Enrollment} from "@/models";
-import {ApiResponse, PaginationResponse} from "@/lib/types";
+import {Category, Course, Enrollment} from "@/models";
+import {ApiResponse, PagedResponse, PaginationResponse} from "@/lib/types";
 import {AxiosServerClient} from "@/lib/axiosServerClient";
 import {handleAxiosError} from "@/lib/handleAxiosError";
 import {TypeResponse} from "@/lib/types";
 import {requireUser} from "@/actions/auth/requireUser";
+import Pagination from "@/components/general/Pagination";
 
 
 /**
@@ -44,6 +45,7 @@ export async function getCourseBySlug(
 }
 
 
+// @ts-ignore
 /**
  * 🔹 Récupère les cours auxquels l’utilisateur est inscrit (paginé)
  *
@@ -51,54 +53,40 @@ export async function getCourseBySlug(
 export async function getEnrolledCourses(
     page: number = 1,
     perPage: number
-): Promise<PaginationResponse<Enrollment>> {
+): Promise<TypeResponse<PagedResponse<Enrollment[]> | null>> {
+
     const user = await requireUser();
 
-    const client = await AxiosServerClient();
-    const res = await client.get(`/billing/enrollments/user/${user?.userId}/all/active`);
+    if (!user)
+        return {
+            status: "success",
+            message: "User non authentifié",
+            data: null,
+        };
+    try {
 
-    const data: Enrollment[] = res.data.data.content;
-    // const courseIds = data.map(enrollment =>enrollment.courseId);
-    // if(courseIds.length === 0)
-    // {
-    //     return {
-    //         data:[],
-    //         totalPages: 0,
-    //         page,
-    //         perPage,
-    //         total: 0,
-    //     };
-    // }
-    //
-    // const response = await client.post(`/catalog/public/courses/list`,{
-    //     courseIds: courseIds
-    // });
-    //
-    // if(!response.data.success )
-    //     if (!res.data?.success || !res.data.data) {
-    //         return {
-    //             data:[],
-    //             totalPages: 0,
-    //             page,
-    //             perPage,
-    //             total: 0,
-    //         };
-    //     }
-    //
-    // const courses = response.data.data;
-    //
-    // data.forEach(enrollment => {
-    //     enrollment.course = courses.find((course: Course) => course.id === enrollment.courseId)!;
-    // })
-    const total = res.data.data.totalElements;
+        const client = await AxiosServerClient();
+        const res = await client.get<ApiResponse<PagedResponse<Enrollment[]>>>(`/billing/enrollments/user/${user?.userId}/all/active`,
+            {params: {page, size: perPage}}
+        );
 
-    return {
-        data,
-        totalPages: Math.ceil(total / perPage),
-        page,
-        perPage,
-        total,
-    };
+        if (!res.data?.success || !res.data.data) {
+            return {
+                status: "error",
+                message: res.data?.message || "Erreur de récupération des ventes",
+                data: { content: [], currentPage: 0, totalPages: 0, perPage: 0, totalElements: 0},
+            };
+        }
+
+        return {
+            status: "success",
+            message: res.data.message,
+            data: res.data.data,
+        };
+
+    } catch (error) {
+        return handleAxiosError<PagedResponse<Enrollment[]>>(error, "Erreur lors du chargement des ventes");
+    }
 }
 
 /**
@@ -107,7 +95,12 @@ export async function getEnrolledCourses(
 export async function getAllEnrolledCoursesByUser(): Promise<TypeResponse<Enrollment[] | null>> {
 
     const user = await requireUser();
-
+    if (!user)
+        return {
+            status: "success",
+            message: "Cours récupéré avec succès",
+            data: [],
+        };
     try {
         const client = await AxiosServerClient();
         const res = await client.get<ApiResponse<Enrollment[]>>(`/billing/enrollments/user/${user?.userId}/active`);
@@ -133,10 +126,15 @@ export async function getAllEnrolledCoursesByUser(): Promise<TypeResponse<Enroll
 /*
 Chack if user  bought a course
  */
-export async function checkIfCourseBought(courseId: string): Promise<TypeResponse<Enrollment | null>>  {
+export async function checkIfCourseBought(courseId: string): Promise<TypeResponse<Enrollment | null>> {
 
     const user = await requireUser();
-
+    if (!user)
+        return {
+            status: "success",
+            message: "Cours récupéré avec succès",
+            data: null,
+        };
     try {
         const client = await AxiosServerClient();
         const res = await client.get<ApiResponse<Enrollment>>(`/billing/enrollments/user/${user?.id}/course/${courseId}`);

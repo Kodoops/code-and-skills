@@ -6,8 +6,11 @@ import com.codeandskills.user_profile_service.application.dto.UserProfileDTO;
 import com.codeandskills.user_profile_service.application.mapper.UserProfileMapper;
 import com.codeandskills.user_profile_service.domain.model.UserProfile;
 import com.codeandskills.user_profile_service.domain.repository.UserProfileRepository;
+import com.codeandskills.user_profile_service.infrastructure.web.dto.ProfileStatsResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -30,6 +33,7 @@ public class UserProfileService {
         UserProfile existing = getProfile(userId);
         existing.setFirstname(updated.getFirstname());
         existing.setLastname(updated.getLastname());
+        existing.setTitle(updated.getTitle());
         existing.setAvatarUrl(updated.getAvatarUrl());
         existing.setBio(updated.getBio());
         existing.setCountry(updated.getCountry());
@@ -51,5 +55,16 @@ public class UserProfileService {
                 .orElseThrow(() -> new RuntimeException("Profil non trouvé id:  " +  userId));
         log.info("PublicProfileById {}", userProfile.getUserId());
         return mapper.toPublicDto(userProfile);
+    }
+
+    public ProfileStatsResponse getProfilesStats(String status) {
+
+        List<UserProfile> users = repository.findAll();
+        List<UserProfile> premiums = users.stream().filter(UserProfile::isPremium).toList();
+        ProfileStatsResponse response = new ProfileStatsResponse();
+        response.setUsersCount(users.size());
+        response.setPremiumUsersCount(premiums.size());
+
+        return response;
     }
 }

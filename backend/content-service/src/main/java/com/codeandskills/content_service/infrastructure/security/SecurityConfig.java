@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/content/features").permitAll()
                         .requestMatchers("/content/pages/**").permitAll()
                         .requestMatchers("/content/companies/company").permitAll()
+                        .requestMatchers("/content/companies/company/public").permitAll()
                         .requestMatchers("/content/companies/links").permitAll()
                         .requestMatchers("/content/companies/links/unlinked").permitAll()
                         .requestMatchers("/content/admin/**").hasAuthority("ROLE_ADMIN")

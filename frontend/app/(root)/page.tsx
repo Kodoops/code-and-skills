@@ -27,9 +27,9 @@ import {getAllTestimonials} from "@/actions/testimonials";
 import {getFeaturedLearningPaths} from "@/actions/learning-path";
 import {Course, Enrollment, LearningPath} from "@/models";
 import {getAllEnrolledCoursesByUser} from "@/actions/auth/course";
-import CardError from "@/components/custom-ui/CardError";
 import {FEATURES_PER_PAGE} from "@/constants/user-contants";
 import {getFeatures} from "@/actions/public/feature";
+import EmptyState from "@/components/general/EmptyState";
 
 
 export default async function Home() {
@@ -37,7 +37,6 @@ export default async function Home() {
     return (
         <>
             <AppHero/>
-
             {/* CATEGORIES*/}
             <Section className="py-12">
                 <SectionHeader
@@ -55,7 +54,7 @@ export default async function Home() {
             <Section className="py-12">
                 <SectionHeader
                     title={"Formations mises en avant"}
-                    btnList={["Débutant", "Intermédiaire", "Avancé", "Expert"]}
+                    btnList={["Beginner", "Intermediate", "Advanced", "Expert"]}
                     btnListHref={"/courses"}
                     btnLink={"/courses"}
                 />
@@ -107,11 +106,9 @@ export default async function Home() {
 
             {/* PARTNERS / PROMO */}
            {/* <Section className="py-12">
-
                 <Suspense fallback={<BannerPartnerLoadingSkeletonLayout/>}>
                     <RenderBannerPartner/>
                 </Suspense>
-
             </Section>*/}
 
             {/* TESTIMONIALS id="testimonials"*/}
@@ -143,23 +140,24 @@ export default async function Home() {
     );
 }
 
-
 async function RenderCourses() {
+    const {data, status, message, code} = await getRecentCourses();
 
-    const {data} = await getRecentCourses();
+    if(status !== "success") {
+       return <EmptyState
+            title={"Erreur du service des cours"}
+            description={ code && code===503 ? "Service is temporarily unavailable ":message}
+        />;
+    }
 
     const res  =  await getAllEnrolledCoursesByUser();
-
     let enrolledByUser: Enrollment[] = [];
-
     if(res?.status === "success") {
         enrolledByUser = res?.data ?? [];
     }
 
-    const enrolledCourseIds = enrolledByUser.map(enrollment => enrollment?.courseId);
-
+    const enrolledCourseIds = enrolledByUser.map(enrollment => enrollment?.referenceId);
     const alreadyEnrolled: string[] = [];
-
     const cleaned = data?.map((course : Course) => {
         const isEnrolled = enrolledCourseIds.includes(course.id);
         if (isEnrolled) {
@@ -188,45 +186,15 @@ function FeaturedCoursesLoadingSkeletonLayout() {
     )
 }
 
-async function RenderLearningPaths() {
-
-    const data = await getFeaturedLearningPaths();
-
-    let  enrolledByUser: LearningPath[] =[]; // =  await getAllEnrolledLearningPathsByUser();
-
-    const enrolledCourseIds = enrolledByUser.map(enrollment => enrollment?.id);
-
-    const alreadyEnrolled: string[] = [];
-
-    const cleaned = data.map(path => {
-        const isEnrolled = enrolledCourseIds.includes(path.id);
-        if (isEnrolled) {
-            alreadyEnrolled.push(path.id);
-        }
-
-        return ({
-            ...path,
-        })
-    });
-
-    return (
-        <LearningPathsCarouselClient items={cleaned} perPage={2} alreadyEnrolled={alreadyEnrolled}/>
-    );
-}
-
-function FeaturedLearningPathsLoadingSkeletonLayout() {
-
-    return (
-        <div className={"grid grid-cols-1 md:grid-cols-2  gap-6"}>
-            {Array.from({length: 6}).map((_, index) => (
-                <LearningPathSkeletonSimpleCard key={index}/>
-            ))}
-        </div>
-    )
-}
-
 async function RenderCategories() {
-    const {data} = await getPopularCategories()
+    const {data, status, message, code} = await getPopularCategories()
+
+    if(status !== "success") {
+        return <EmptyState
+            title={"Erreur du service des catégories"}
+            description={ code && code===503 ? "Service is temporarily unavailable ":message}
+        />;
+    }
 
     return (
         data &&
@@ -248,7 +216,10 @@ async function RenderFeatures() {
     const result = await getFeatures(0, FEATURES_PER_PAGE)
 
     if(! result || !result.data) {
-        <CardError  message={result.message} title={"Error Features"} />
+        return <EmptyState
+            title={"Erreur du service des fonctionalités"}
+            description={ result.code && result.code===503 ? "Service is temporarily unavailable ":result.message}
+        />;
     }
     return (
         <FeaturedCarouselClient items={result.data?.content!} perPage={3}/>
@@ -266,7 +237,15 @@ function FeaturesLoadingSkeletonLayout() {
 }
 
 async function RenderTestimonials() {
-    const {data, totalPages, perPage, page, total} = await getAllTestimonials(1, 9)
+    const  result= await getAllTestimonials(1, 9)
+    if(! result || !result.data) {
+        return <EmptyState
+            title={"Erreur du service des retours d'apprentissage"}
+            description={ result.code && result.code===503 ? "Service is temporarily unavailable ":result.message}
+        />;
+    }
+
+    const {data, totalPages, perPage, page, total}  = result;
     return (
         <TestimonialCarouselClient items={data}/>
     )
@@ -332,5 +311,39 @@ function BannerPartnerLoadingSkeletonLayout() {
                 </div>
             </div>
         </Card>
+    )
+}
+
+
+async function RenderLearningPaths() {
+
+    const data = await getFeaturedLearningPaths();
+    let  enrolledByUser: LearningPath[] =[]; // =  await getAllEnrolledLearningPathsByUser();
+    const enrolledCourseIds = enrolledByUser.map(enrollment => enrollment?.id);
+    const alreadyEnrolled: string[] = [];
+    const cleaned = data.map(path => {
+        const isEnrolled = enrolledCourseIds.includes(path.id);
+        if (isEnrolled) {
+            alreadyEnrolled.push(path.id);
+        }
+
+        return ({
+            ...path,
+        })
+    });
+
+    return (
+        <LearningPathsCarouselClient items={cleaned} perPage={2} alreadyEnrolled={alreadyEnrolled}/>
+    );
+}
+
+function FeaturedLearningPathsLoadingSkeletonLayout() {
+
+    return (
+        <div className={"grid grid-cols-1 md:grid-cols-2  gap-6"}>
+            {Array.from({length: 6}).map((_, index) => (
+                <LearningPathSkeletonSimpleCard key={index}/>
+            ))}
+        </div>
     )
 }

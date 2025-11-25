@@ -1,5 +1,7 @@
 package com.codeandskills.billing_service.application.dto;
 
+import com.codeandskills.billing_service.domain.models.EnrollmentType;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,8 +20,12 @@ public class EnrollmentDTO {
     private String status;
     private Integer amount;
     private String currency;
+    private String referenceId;
+    private EnrollmentType type;
+   // private String courseId;
     private CourseDTO course;
-    private String courseId;
+//    private LearningPathDTO learningPath;
+//    private WorkshopDTO workshop;
     private PaymentInfo payment;
 
     @Data

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, String> 
     List<Enrollment> findAllWithPaymentByUserId(@Param("userId") String userId);
 
     List<Enrollment> findByUserIdAndStatus(String userId, EnrollmentStatus enrollmentStatus);
+    Page<Enrollment> findByUserIdAndStatus(String userId, EnrollmentStatus enrollmentStatus, Pageable pageable);
 
     List<Enrollment> findByUserId(String userId);
     Page<Enrollment> findByUserId(String userId, Pageable pageable);
@@ -30,5 +32,10 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, String> 
 
     Optional<Enrollment> findByPayment(Payment payment);
 
-    Optional<Enrollment> findByUserIdAndCourseIdAndStatus(String userId, String courseId, EnrollmentStatus enrollmentStatus);
+    Optional<Enrollment> findByUserIdAndReferenceIdAndStatus(String userId, String referenceId, EnrollmentStatus enrollmentStatus);
+
+    List<Enrollment> findByCreatedAtGreaterThanEqualOrderByCreatedAtDesc(LocalDateTime createdAfter);
+
+    @Query("SELECT COUNT(DISTINCT e.userId) FROM Enrollment e")
+    long countClientsWithEnrollments();
 }

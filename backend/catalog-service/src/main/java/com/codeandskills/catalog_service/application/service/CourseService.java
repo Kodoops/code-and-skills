@@ -72,10 +72,30 @@ public class CourseService {
     /**
      * 🔹 Récupère une page de tous les cours (admin)
      */
+    public List<CourseDTO> getAllCourses() {
+        List<Course> result = courseRepository.findAll();
+
+        return mapper.toDtoList(result);
+    }
+
+
+    /**
+     * 🔹 Récupère une page de tous les cours (admin)
+     */
     public PagedResponse<CourseDTO> getAllCourses(int page, int size) {
         Page<Course> result = courseRepository.findAll(PageRequest.of(page, size));
 
         return mapper.toDtoPage(result);
+    }
+
+
+    /**
+     * 🔹 Récupère une page de tous les cours (admin)
+     */
+    public List<CourseDTO> getAllCourses(CourseStatus status) {
+        List<Course> result = courseRepository.findByStatus(status);
+
+        return mapper.toDtoList(result);
     }
 
     /**

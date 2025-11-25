@@ -12,12 +12,12 @@ import {getCompanySocialLinks} from "@/actions/public/social-networks";
 const Footer = async () => {
 
     const response = await getCompanySocialLinks();
+    console.log(response)
     const socials: CompanySocialLink[] = response.data ? response.data : [];
     const resp = await getPageLinks("Footer");
-    let links : Page[] =[];
-    if(resp && resp.status === "success")
+    let links: Page[] = [];
+    if (resp && resp.status === "success")
         links = resp.data;
-     //links = resp.data.filter(page => page.slug !== "home")
 
     return (
         <footer className="border-t border-border py-10">
@@ -50,7 +50,12 @@ const Footer = async () => {
                             <h2 className={"text-lg  text-right mb-4 font-semibold text-muted-foreground"}>Restez
                                 connecté avec
                                 nous !</h2>
-                            <CompanySocialLinks links={socials}/>
+                            {
+                                response.status !== "success" && response.code === 503 ?
+                                    <p className="mb-8 mt-2 text-center text-sm leading-tight text-muted-foreground text-center flex-1">
+                                        {response.message}</p> :
+                                    <CompanySocialLinks links={socials}/>
+                            }
                         </div>
                     </div>
                 </div>
@@ -59,8 +64,9 @@ const Footer = async () => {
                 <nav className="flex  flex-wrap items-center justify-center gap-4 text-xs  text-muted-foreground/70">
                     <p className="mt-1 text-xs ">© {new Date().getFullYear()} Code&Skills — Tous droits
                         réservés.</p>
-                    {links && links?.map((link, index) => (
-                        <Link key={link.id} href={`/pages/${link.slug}`} className="hover:text-primary">{link.title}</Link>
+                    {links && links.length > 0 && links?.map((link, index) => (
+                        <Link key={link.id} href={`/pages/${link.slug}`}
+                              className="hover:text-primary">{link.title}</Link>
                     ))}
                 </nav>
             </Section>

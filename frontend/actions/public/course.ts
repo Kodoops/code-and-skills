@@ -85,6 +85,7 @@ export async function getRecentCourses(
             data: res.data.data,
         };
     } catch (error) {
+
         return handleAxiosError<Course[]>(error, "Erreur lors de la récupération des cours récents");
     }
 }

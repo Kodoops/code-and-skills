@@ -31,6 +31,11 @@ spring:
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: true
     consumer:
       group-id: ${KAFKA_CONSUMER_GROUP_ID}
       auto-offset-reset: earliest
@@ -95,6 +100,10 @@ services:
     url: ${USER_PROFILE_SERVICE_URL:http://localhost:8080/api}
   catalog-service:
     url: ${CATALOG_SERVICE_URL:http://localhost:8080/api}
+  file-service:
+    url: ${FILE_SERVICE_SERVICE_URL:http://localhost:8080/api}
+  content-service:
+    url: ${CONTENT_SERVICE_URL:http://localhost:8080/api}
 
 app:
   frontendUrl: ${APP_FRONTEND_URL}

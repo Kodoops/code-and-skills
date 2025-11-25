@@ -4,8 +4,8 @@ import { buttonVariants } from '@/components/ui/button';
 import { theme } from '@/lib/theme';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import React from 'react';
-import Stats from "@/app/(root)/_components/Stats";
+import React, {Suspense} from 'react';
+import Stats, {StatsSkeletonLayout} from "@/app/(root)/_components/Stats";
 import {useSession} from "@/hooks/useSession";
 import NewsOrRegisterBtn from "@/app/(root)/_components/NewsOrRegisterBtn";
 
@@ -43,7 +43,9 @@ const AppHero = async () => {
 
                     <NewsOrRegisterBtn />
 
-                    <Stats/>
+                    <Suspense fallback={<StatsSkeletonLayout />}>
+                       <Stats/>
+                   </Suspense>
                 </div>
             </div>
         </section>

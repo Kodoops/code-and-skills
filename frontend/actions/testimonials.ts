@@ -1,16 +1,17 @@
-import {PaginationResponse, Testimonial} from "@/models";
+import { Testimonial} from "@/models";
+import {PagedResponse} from "@/lib/types";
 
 export async function getAllTestimonials(current: number = 1, nbrPage: number ):
-    Promise<PaginationResponse<Testimonial>>{
+    Promise<PagedResponse<Testimonial>>{
 
-    const data: Testimonial[] = [];
-    const total = 0;
+    const content: Testimonial[] = [];
+    const totalPages = 0;
 
     return {
-        data,
-        total,
-        page: current,
+        content,
+        currentPage: current,
+        totalPages: Math.ceil(totalPages / nbrPage),
         perPage: nbrPage,
-        totalPages: Math.ceil(total / nbrPage),
+        totalElements: content.length,
     };
 }

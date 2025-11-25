@@ -21,7 +21,17 @@ const RenderCourses = async ({filters}: { filters: CourseFilters }) => {
     const response = await getCourses(filters);
 
     if(!response) {
-        return <CardError message={"Impossible de charger les cours."} title={"Erreur Chargement des cours"} />
+        return  <EmptyState
+            title={"Erreur du service des catégories"}
+            description={ "Service is temporarily unavailable "}
+        />;
+    }
+
+    if(response.status !== "success") {
+        return  <EmptyState
+            title={"Erreur du service des cours"}
+            description={ response.code && response.code===503 ? "Service is temporarily unavailable ":response.message}
+        />;
     }
 
     const data = response?.data?.content;
@@ -38,7 +48,7 @@ const RenderCourses = async ({filters}: { filters: CourseFilters }) => {
     }
 
     // On extrait la liste des IDs des cours déjà suivis
-    const enrolledCourseIds =  enrolledByUser.length > 0 ? enrolledByUser.map(enrollment => enrollment?.courseId) :null;
+    const enrolledCourseIds =  enrolledByUser.length > 0 ? enrolledByUser.map(enrollment => enrollment?.course?.id) :null;
 
     const alreadyEnrolled: string[] = [];
 
@@ -56,7 +66,7 @@ const RenderCourses = async ({filters}: { filters: CourseFilters }) => {
                 title="No Courses Found"
                 description="No courses found with the selected filters."
                 buttonText="All Courses"
-                href="/courses"
+                href="/courses?level=&categorySlug=&isFree"
                 icon={SearchIcon}
             />
         );

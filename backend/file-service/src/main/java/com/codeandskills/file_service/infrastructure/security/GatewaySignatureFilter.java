@@ -30,6 +30,8 @@ public class GatewaySignatureFilter extends OncePerRequestFilter {
         String uri = request.getRequestURI();
         String signature = request.getHeader("X-Gateway-Signature");
 
+        log.info("========== before signature {} founded {}", signature, uri);
+
         // ✅ Vérifie d'abord la signature Gateway
         if (signature == null || !trustSecret.equals(signature)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or missing gateway signature");
@@ -37,15 +39,13 @@ public class GatewaySignatureFilter extends OncePerRequestFilter {
         }
 
         // ✅ Si la route est publique → pas besoin des autres headers
+        log.info("========== before exception");
+        if (uri.startsWith("/files/internal")  || uri.startsWith("/api/files/internal")){
+            filterChain.doFilter(request, response);
 
-//        if (uri.startsWith("/content/features")  || uri.startsWith("/content/links")
-//                || uri.startsWith("/content/pages") || uri.startsWith("/content/companies/links")
-//                || uri.startsWith("/content/companies/links/unlinked")
-//                || uri.startsWith("/content/companies/company")
-//        ){
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
+            log.info("========== after exception");
+            return;
+        }
 
         // 🔒 Sinon, vérifier la présence des en-têtes utilisateur
         String userId = request.getHeader("X-User-Id");

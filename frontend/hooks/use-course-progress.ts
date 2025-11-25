@@ -20,7 +20,7 @@ export function useCourseProgress({ courseData }: { courseData: Course }): Cours
         async function fetchProgress() {
 
             const res = await getCourseProgress(courseData.id);
-            console.log("res", res);
+
             if (res.status === "success" && Array.isArray(res.data) ) {
                 const completed = res.data
                     .filter((p: any) => p.completed)

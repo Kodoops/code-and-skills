@@ -50,7 +50,7 @@ public class EnrollmentController {
     @GetMapping("/user/{userId}/course/{courseId}")
     public ResponseEntity<ApiResponse<?>> checkIfCourseIsBoughtByUser(@PathVariable String userId,
                                                                                         @PathVariable String courseId) {
-        EnrollmentDTO enrollment = enrollmentService.checkIfCourseIsBoughtByUser(courseId, userId);
+        EnrollmentDTO enrollment = enrollmentService.checkIfProductIsBoughtByUser(courseId, userId);
         if (enrollment == null) {
             return ResponseEntity.ok(
                     ApiResponse.error(   200, "error", "Aucun achat de trouvé pour cet utilisateur ","/enrollment")
@@ -58,6 +58,14 @@ public class EnrollmentController {
         }
         return ResponseEntity.ok(
                 ApiResponse.success(   200, "Enrollment actifs de user ",enrollment)
+        );
+    }
+
+    @GetMapping("/user/{userId}/count")
+    public ResponseEntity<ApiResponse<List<EnrollmentDTO>>> countUserEnrollments(@PathVariable String userId) {
+        List<EnrollmentDTO> enrollments = enrollmentService.getUserEnrollments(userId);
+        return ResponseEntity.ok(
+                ApiResponse.success(   200, "Enrollment actifs de user ",enrollments)
         );
     }
 

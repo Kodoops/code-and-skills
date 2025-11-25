@@ -53,15 +53,4 @@ public class UserAccountService {
 
         log.info("🔒 Password reset successful for {}", user.getEmail());
     }
-
-    // ✅ 4. Mise à jour du profil
-//    @Transactional
-//    public User updateProfile(User user, UpdateProfileRequest request) {
-////        user.setFirstname(request.getFirstname());
-////        user.setLastname(request.getLastname());
-////        user.setPhone(request.getPhone());
-//        userRepository.save(user);
-//        log.info("👤 Profile updated for {}", user.getEmail());
-//        return user;
-//    }
 }

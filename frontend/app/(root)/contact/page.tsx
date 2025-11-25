@@ -9,6 +9,7 @@ import ContactForm from "@/app/(root)/contact/_component/ContactForm";
 import {getCompanyInfos} from "@/actions/public/company";
 import {Skeleton} from "@/components/ui/skeleton";
 import {Suspense} from "react";
+import EmptyState from "@/components/general/EmptyState";
 
 export default async function ContactPage() {
 
@@ -44,6 +45,13 @@ export default async function ContactPage() {
 
 const RenderCompanyInfos = async () => {
     const res = await getCompanyInfos();
+
+    if(!res || !res.data)
+        return <EmptyState
+            title={"Informations de la société manquantes"}
+            description={res.message}
+        />;
+
     let company = null
     if (res && res.status === "success")
         company = res.data;

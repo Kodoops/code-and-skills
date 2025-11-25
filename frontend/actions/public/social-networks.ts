@@ -17,6 +17,7 @@ export async function getCompanySocialLinks(): Promise<TypeResponse<CompanySocia
         if (!res.data?.success || !res.data) {
             return {
                 status: "error",
+                code: res.data?.status ,
                 message: res.data?.message || "Erreur de récupération des social links",
                 data: null,
             };
@@ -24,6 +25,7 @@ export async function getCompanySocialLinks(): Promise<TypeResponse<CompanySocia
 
         return {
             status: "success",
+            code: res.data?.status ,
             message: res.data.message || "Social links  récupérés avec succès",
             data: res.data.data,
         };

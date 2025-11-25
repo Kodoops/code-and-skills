@@ -25,8 +25,12 @@ public class Enrollment extends BaseEntity {
     @Column(nullable = false)
     private EnrollmentStatus status;
 
-    @Column(name = "course_id", nullable = false)
-    private String courseId;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EnrollmentType type;
+
+    @Column(name = "reference_id", nullable = false)
+    private String referenceId;
 
     @Column(name = "user_id", nullable = false)
     private String userId;

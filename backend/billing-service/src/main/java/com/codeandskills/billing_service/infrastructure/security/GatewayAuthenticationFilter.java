@@ -34,15 +34,13 @@ public class GatewayAuthenticationFilter extends OncePerRequestFilter {
         String email = request.getHeader("X-User-Email");
         String role = request.getHeader("X-User-Role");
 
-//        log.info("Gateway auth: userId={}, email={}, role={}", userId, email, role);
-//
-//        String path = request.getRequestURI();
-//        if (path.startsWith("/billing/webhook")) {
-//
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
-//
+        String path = request.getRequestURI();
+        if (path.startsWith("/files/internal/") || path.startsWith("/api/files/internal/")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
        String internalHeader = request.getHeader(INTERNAL_HEADER);
        log.info("Internal header: {}", internalHeader);
 
@@ -55,13 +53,13 @@ public class GatewayAuthenticationFilter extends OncePerRequestFilter {
 
 //        log.info("Gateway auth: userId={}, email={}, role={}", userId, email, role);
 ////        // 🔹 Si la Gateway a mis les headers, on les transforme en Authentication
-//        if (userId != null && role != null) {
-//            var authority = new SimpleGrantedAuthority("ROLE_" + role.toUpperCase());
-//            var auth = new UsernamePasswordAuthenticationToken(email, null, List.of(authority));
-//            log.info("Auth: {}", auth);
-//            // ✅ Injecte dans le contexte Spring Security
-//            SecurityContextHolder.getContext().setAuthentication(auth);
-//        }
+        if (userId != null && role != null) {
+            var authority = new SimpleGrantedAuthority("ROLE_" + role.toUpperCase());
+            var auth = new UsernamePasswordAuthenticationToken(email, null, List.of(authority));
+            log.info("Auth: {}", auth);
+            // ✅ Injecte dans le contexte Spring Security
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
 
         filterChain.doFilter(request, response);
     }

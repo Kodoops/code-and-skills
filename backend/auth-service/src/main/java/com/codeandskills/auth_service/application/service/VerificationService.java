@@ -160,7 +160,7 @@ public class VerificationService {
 
         Map<String, Object> variables = Map.of(
                 "userName", "",
-                "profileLink", FRONT_BASE_URL + "/auth/profile"
+                "profileLink", FRONT_BASE_URL + "/dashboard"
         );
 
         EmailRequestedEvent event = new EmailRequestedEvent(

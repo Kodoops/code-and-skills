@@ -21,6 +21,7 @@ public class ContentServiceApplication {
 		System.setProperty("DOTENV_DIR", "backend/content-service");
 
 		app.run(args);
+
 	}
 
 }

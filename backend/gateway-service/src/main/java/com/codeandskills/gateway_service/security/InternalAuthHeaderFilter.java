@@ -23,7 +23,7 @@ public class InternalAuthHeaderFilter implements GlobalFilter, Ordered {
         String path = exchange.getRequest().getURI().getPath();
 
         // ✅ Injecter le secret UNIQUEMENT pour les routes internes
-        if (path.startsWith("/internal/")) {
+        if (path.startsWith("/internal/") || path.startsWith("/files/internal/") || path.startsWith("/api/files/internal/")) {
             exchange = exchange.mutate()
                     .request(r -> r.headers(h -> h.set("X-Gateway-Secret", gatewaySecret)))
                     .build();

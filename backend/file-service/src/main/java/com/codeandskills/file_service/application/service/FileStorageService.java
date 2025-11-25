@@ -13,8 +13,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Utilities;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
@@ -22,7 +24,9 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -304,5 +308,37 @@ public class FileStorageService {
 
         repository.save(file);
 
+    }
+
+    public String uploadBytes(String key, byte[] content, String contentType) {
+        PutObjectRequest putRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .contentType(contentType)
+                .build();
+
+        s3Client.putObject(putRequest, RequestBody.fromBytes(content));
+        return key;
+    }
+
+    public String getPublicUrl(String key) {
+        S3Utilities utilities = s3Client.utilities();
+
+        URL url = utilities.getUrl(GetUrlRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build());
+
+        return url.toString();
+    }
+
+    public byte[] download(String key) throws IOException {
+        GetObjectRequest getRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
+
+        ResponseBytes<?> objectBytes = s3Client.getObjectAsBytes(getRequest);
+        return objectBytes.asByteArray();
     }
 }

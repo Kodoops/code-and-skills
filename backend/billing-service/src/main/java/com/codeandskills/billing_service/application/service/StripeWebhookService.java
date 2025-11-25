@@ -1,15 +1,18 @@
 package com.codeandskills.billing_service.application.service;
 
+import com.codeandskills.billing_service.application.dto.UserProfileDTO;
 import com.codeandskills.billing_service.domain.models.Enrollment;
+import com.codeandskills.billing_service.domain.models.EnrollmentStatus;
 import com.codeandskills.billing_service.domain.models.Invoice;
 import com.codeandskills.billing_service.domain.models.Payment;
+import com.codeandskills.billing_service.infrastructure.client.GetPublicUserProfile;
+import com.codeandskills.billing_service.infrastructure.client.UserProfileClient;
 import com.codeandskills.billing_service.infrastructure.kafka.PaymentEventProducer;
 import com.codeandskills.common.events.billing.PaymentFailedEvent;
 import com.codeandskills.common.events.billing.PaymentRefundedEvent;
 import com.codeandskills.common.events.billing.PaymentSucceededEvent;
 import com.stripe.exception.SignatureVerificationException;
-import com.stripe.model.Event;
-import com.stripe.model.Refund;
+import com.stripe.model.*;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.ApiResource;
 import com.stripe.net.Webhook;
@@ -27,8 +30,10 @@ public class StripeWebhookService {
 
     private final PaymentEventProducer producer;
     private final PaymentService paymentService;
-    private final InvoiceService  invoiceService;
+    private final InvoiceService invoiceService;
     private final EnrollmentService enrollmentService;
+
+    private final UserProfileClient userProfileClient;
 
     @Value("${stripe.webhook.secret}")
     private String webhookSecret;
@@ -51,8 +56,10 @@ public class StripeWebhookService {
                 // ❌ Échec du paiement
                 case "payment_intent.payment_failed" -> handlePaymentFailed(event);
 
+//                case "charge.refunded" -> handleRefunded(event);
+
                 // 💸 Remboursement total ou partiel
-                case "charge.refunded" -> handleRefunded(event);
+                case "refund.created" -> handleRefundCreated(event);
 
                 // 🚫 Session expirée ou annulée
                 case "checkout.session.expired" -> handleSessionExpired(event);
@@ -68,6 +75,51 @@ public class StripeWebhookService {
             throw new IllegalArgumentException("Payment Webhook error: " + e.getMessage());
         }
 
+    }
+
+    private void handleRefundCreated(Event event) {
+        try {
+            StripeObject dataObject = event.getData().getObject();
+            if (!(dataObject instanceof Refund refund)) {
+                log.error("❌ handleRefundCreated: data.object n'est pas un Refund mais {}",
+                        dataObject != null ? dataObject.getClass() : "null");
+                return;
+            }
+
+            String paymentIntentId = refund.getPaymentIntent();
+            if (paymentIntentId == null) {
+                log.warn("⚠️ Aucun paymentIntentId sur refund {}", refund.getId());
+                return;
+            }
+
+            String reason = refund.getReason() != null ? refund.getReason() : "unspecified";
+
+            Payment p = paymentService.markAsRefunded(paymentIntentId, reason);
+            UserProfileDTO profileDto = userProfileClient.getUserProfileById(new GetPublicUserProfile(p.getUserId()));
+            Enrollment enrollment = enrollmentService.markAs(p, EnrollmentStatus.REFUNDED);
+            log.info("💸 [refund.created] Paiement remboursé en BDD ({}) pour user={} ref={}",
+                    p.getId(), p.getUserId(), p.getReferenceId());
+
+            producer.publishPaymentRefunded(
+                    PaymentRefundedEvent.builder()
+                            .paymentId(p.getId())
+                            .userId(p.getUserId())
+                            .email(profileDto.getEmail())
+                            .username(!profileDto.getFirstname().isEmpty() || !profileDto.getLastname().isEmpty() ? profileDto.getFirstname() + " " + profileDto.getLastname() : "Client")
+                            .referenceId(p.getReferenceId())
+                            .type(p.getType().toString())
+                            .amount(p.getAmount().intValue())
+                            .currency(p.getCurrency())
+                            .refundReason(reason)
+                            .stripePaymentIntentId(paymentIntentId)
+                            .receiptUrl("/dashboard/invoices")
+                            .refundedAt(LocalDateTime.now())
+                            .build()
+            );
+
+        } catch (Exception e) {
+            log.error("❌ Erreur handleRefundCreated : {}", e.getMessage(), e);
+        }
     }
 
     private void handleCheckoutCompleted(Event event) {
@@ -101,12 +153,12 @@ public class StripeWebhookService {
                             .username(session.getCustomerDetails().getName() != null ? session.getCustomerDetails().getName() : "Client")
                             .referenceId(courseId)
                             .type(type)
-                            .amount(p.getAmount())
+                            .amount(p.getAmount().intValue())
                             .currency(p.getCurrency())
                             .method("card")
                             .stripePaymentIntentId(paymentIntentId)
                             .stripeSessionId(sessionId)
-                            .receiptUrl("/profil/invoices/"+(invoice.getInvoiceNumber()))
+                            .receiptUrl("/dashboard/invoices" ) //+ (invoice.getInvoiceNumber())
                             .paidAt(LocalDateTime.now())
                             .build()
             );
@@ -146,24 +198,34 @@ public class StripeWebhookService {
             log.warn("💥 Paiement échoué : {}", event.getId());
 
             String rawJson = event.getData().getObject().toJson();
+
+            Session session = ApiResource.GSON.fromJson(rawJson, Session.class);
+
+            String userId = session.getMetadata().get("userId");
+            String courseId = session.getMetadata().get("courseId");
+            String enrollmentId = session.getMetadata().get("enrollmentId");
+            String sessionId = session.getId();
+            String paymentIntentId = session.getPaymentIntent() != null ? session.getPaymentIntent() : null;
+            String type = session.getMetadata().get("type");
+
             com.stripe.model.PaymentIntent intent = ApiResource.GSON.fromJson(rawJson, com.stripe.model.PaymentIntent.class);
 
-            String paymentIntentId = intent.getId();
+            // String paymentIntentId = intent.getId();
             String failureCode = intent.getLastPaymentError() != null ? intent.getLastPaymentError().getCode() : "unknown";
             String failureMessage = intent.getLastPaymentError() != null ? intent.getLastPaymentError().getMessage() : "Aucune information";
 
             log.warn("❌ PaymentIntent {} échoué : {} - {}", paymentIntentId, failureCode, failureMessage);
 
             // Mise à jour du paiement local
-            paymentService.markAsFailedByIntentId(paymentIntentId, failureMessage);
+            Payment p = paymentService.markAsFailedByIntentId(paymentIntentId, failureMessage);
             producer.publishPaymentFailed(
                     PaymentFailedEvent.builder()
                             .paymentId(paymentIntentId)
-                            .userId(null) // tu peux l’ajouter plus tard via ta table Payment
-                            .referenceId(null)
-                            .type("COURSE")
-                            .amount(null)
-                            .currency("eur")
+                            .userId(userId) // tu peux l’ajouter plus tard via ta table Payment
+                            .referenceId(courseId)
+                            .type(type)
+                            .amount(p.getAmount().intValue())
+                            .currency(p.getCurrency())
                             .reason(failureMessage)
                             .stripePaymentIntentId(paymentIntentId)
                             .failedAt(LocalDateTime.now())
@@ -172,35 +234,6 @@ public class StripeWebhookService {
 
         } catch (Exception e) {
             log.error("❌ Erreur handlePaymentFailed : {}", e.getMessage(), e);
-        }
-    }
-
-    // 💸 charge.refunded
-    private void handleRefunded(Event event) {
-        try {
-            String rawJson = event.getData().getObject().toJson();
-            Refund refund = ApiResource.GSON.fromJson(rawJson, Refund.class);
-
-            String paymentIntentId = refund.getPaymentIntent();
-            String reason = refund.getReason() != null ? refund.getReason() : "unspecified";
-
-            log.info("💸 Paiement remboursé : {} (raison={})", paymentIntentId, reason);
-            paymentService.markAsRefunded(paymentIntentId, reason);
-            producer.publishPaymentRefunded(
-                    PaymentRefundedEvent.builder()
-                            .paymentId(paymentIntentId)
-                            .userId(null)
-                            .referenceId(null)
-                            .type("COURSE")
-                            .amount(null)
-                            .currency("eur")
-                            .refundReason(reason)
-                            .stripePaymentIntentId(paymentIntentId)
-                            .refundedAt(LocalDateTime.now())
-                            .build()
-            );
-        } catch (Exception e) {
-            log.error("❌ Erreur handleRefunded : {}", e.getMessage(), e);
         }
     }
 
@@ -218,29 +251,4 @@ public class StripeWebhookService {
         }
     }
 
-    // 🔍 Méthode utilitaire : récupère le reçu Stripe (si disponible)
-    /*private String getReceiptUrl(String paymentIntentId) {
-        try {
-            if (paymentIntentId == null) return null;
-
-            PaymentIntentRetrieveParams params = PaymentIntentRetrieveParams.builder()
-                    .addExpand("charges")
-                    .build();
-
-            PaymentIntent intent = PaymentIntent.retrieve(paymentIntentId, params, null);
-
-            if (intent.getCharges() != null &&
-                    intent.getCharges().getData() != null &&
-                    !intent.getCharges().getData().isEmpty()) {
-
-                String url = intent.getCharges().getData().get(0).getReceiptUrl();
-                log.info("📄 Reçu Stripe trouvé pour intent {} → {}", paymentIntentId, url);
-                return url;
-            }
-
-        } catch (Exception e) {
-            log.warn("⚠️ Impossible de récupérer le reçu Stripe pour {} : {}", paymentIntentId, e.getMessage());
-        }
-        return null;
-    }*/
 }

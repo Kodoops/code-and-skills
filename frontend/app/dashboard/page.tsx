@@ -1,11 +1,10 @@
-import {SectionCards} from "@/components/sidebar/section-cards"
+import {SectionCards} from "@/app/dashboard/_components/section-cards"
 
 
-import React, {Suspense} from "react";
+import React from "react";
 import EmptyState from "@/components/general/EmptyState";
-import AdminCourseCard, {AdminCourseCardSkeleton} from "@/app/admin/courses/_components/AdminCourseCard";
+import AdminCourseCard  from "@/app/admin/courses/_components/AdminCourseCard";
 import {getRecentCourses} from "@/actions/public/course";
-import CardError from "@/components/custom-ui/CardError";
 
 export default async function DashboardIndexPage() {
 
@@ -39,7 +38,10 @@ async function RenderRecentCourses() {
     const response = await getRecentCourses();
 
     if (!response || response.status !== "success") {
-        <CardError message={"Impossible de charger les cours."} title={"Erreur Chargement des cours"} />
+       return <EmptyState
+            title={"Erreur Chargement des cours"}
+            description={ response.message}
+        />;
     }
 
 

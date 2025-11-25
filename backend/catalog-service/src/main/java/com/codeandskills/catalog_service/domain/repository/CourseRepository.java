@@ -83,5 +83,6 @@ public interface CourseRepository extends JpaRepository<Course, String> {
         WHERE (:status IS NULL OR c.status = :status)
     """)
     CourseLessonCounts countCoursesAndLessonsByStatus(@Param("status") CourseStatus status);
+
 }
 

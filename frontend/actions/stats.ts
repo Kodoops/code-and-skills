@@ -1,27 +1,36 @@
 import "server-only";
 import {AxiosServerClient} from "@/lib/axiosServerClient";
-import {ApiResponse} from "@/lib/types";
+import {ApiResponse, SimpleStatistics, TypeResponse} from "@/lib/types";
+import {handleAxiosError} from "@/lib/handleAxiosError";
 
 
-export async function getStats() {
+export async function getStats():Promise<TypeResponse<SimpleStatistics | null>> {
 
-    let courses = 0;
-    let lessons = 0;
-    const quizzes = 0;
+    try{
 
-    const client = await AxiosServerClient();
-    const courseResp = await client.get<ApiResponse<Map<string, number>>>(
-        "/catalog/public/courses/count");
-    if (courseResp.data?.success && courseResp.data.data) {
+        const client = await AxiosServerClient();
+        const courseResp = await client.get<ApiResponse<SimpleStatistics>>(
+            "/catalog/public/courses/count");
 
-        // @ts-ignore
-        courses = courseResp.data?.data.courses as number;
-        // @ts-ignore
-        lessons = courseResp.data?.data.lessons as number;
+        if (!courseResp.data?.success || !courseResp.data) {
+
+            return {
+                status: "error",
+                code: courseResp.status,
+                message: courseResp.data?.message || "Erreur de récupération des statistiques ",
+                data: null
+            };
+        }
+
+        return {
+            status: "success",
+            code: courseResp.status,
+            message: courseResp.data.message,
+            data:courseResp.data.data
+        };
+
+    } catch (error) {
+        return handleAxiosError<SimpleStatistics>(error, "Erreur lors du chargement des statistiques");
     }
-
-    return {
-        courses, lessons, quizzes
-    };
 
 }

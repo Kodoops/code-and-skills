@@ -1,19 +1,19 @@
 package com.codeandskills.billing_service.application.service;
 
-import com.codeandskills.billing_service.domain.models.Payment;
-import com.codeandskills.billing_service.domain.models.Enrollment;
-import com.codeandskills.billing_service.domain.models.EnrollmentStatus;
-import com.codeandskills.billing_service.domain.models.PaymentStatus;
+import com.codeandskills.billing_service.domain.models.*;
 import com.codeandskills.billing_service.domain.repository.EnrollmentRepository;
 import com.codeandskills.billing_service.domain.repository.PaymentRepository;
 import com.codeandskills.billing_service.infrastructure.dto.CheckoutResponse;
 import com.codeandskills.billing_service.infrastructure.dto.CourseCheckoutRequest;
+import com.codeandskills.billing_service.infrastructure.web.dto.BillingStatsResponse;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -73,9 +73,9 @@ public class BillingService {
         Payment payment = Payment.builder()
                 .userId(req.getUserId())
                 .referenceId(req.getCourseId())
-                .type("COURSE")
+                .type(InvoiceItemType.COURSE)
                 .stripeId(session.getId())
-                .amount(req.getAmount())
+                .amount(BigDecimal.valueOf(req.getAmount()))
                 .currency(req.getCurrency())
                 .status(PaymentStatus.PENDING)
                 .build();
@@ -87,7 +87,8 @@ public class BillingService {
         // 🔹 Création de l'enrollment associé
         Enrollment enrollment = Enrollment.builder()
                 .userId(req.getUserId())
-                .courseId(req.getCourseId())
+                .referenceId(req.getCourseId())
+                .type(EnrollmentType.valueOf(InvoiceItemType.COURSE.name().toUpperCase()))
                 .amount(req.getAmount())
                 .status(EnrollmentStatus.PENDING)
                 .payment(payment)
@@ -100,4 +101,8 @@ public class BillingService {
         return new CheckoutResponse(session.getUrl(), payment.getId());
     }
 
+    public long getBillingStats() {
+
+        return enrollmentRepository.countClientsWithEnrollments();
+    }
 }

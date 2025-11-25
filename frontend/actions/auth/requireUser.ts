@@ -48,11 +48,11 @@ export const requireUser = cache(async () => {
                 console.warn("🔑 requireUser: token expiré ou invalide → user déconnecté.");
                 return null;
             }
-
-            console.error(
-                `❌ requireUser: erreur HTTP ${status} `,
-                error.response?.data || error.message
-            );
+            console.log(error.response?.data || error.message);
+            // console.error(
+            //     `❌ requireUser: erreur HTTP ${status} `,
+            //     error.response?.data || error.message
+            // );
             return null;
         }
 

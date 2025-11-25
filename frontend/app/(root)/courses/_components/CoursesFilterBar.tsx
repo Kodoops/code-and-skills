@@ -1,6 +1,6 @@
 "use client";
 
-import {useRouter} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import {
     Select,
     SelectTrigger,
@@ -9,7 +9,7 @@ import {
     SelectItem
 } from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {X} from "lucide-react";
 import {Category, LEVELS} from "@/models";
 
@@ -23,8 +23,8 @@ interface Props {
 }
 
 
-
 const CoursesFilterBar = ({current, categories}: Props) => {
+    console.log("current", current)
     const router = useRouter();
 
     const [resetKey, setResetKey] = useState(0);
@@ -56,8 +56,17 @@ const CoursesFilterBar = ({current, categories}: Props) => {
         setSelectedLevel(undefined);
         setSelectedIsFree(undefined);
         setResetKey(prev => prev + 1);
-        router.push("/courses");
+        router.push("/courses?level=&categorySlug=&isFree");
     };
+
+
+    const params = useSearchParams();
+
+    useEffect(() => {
+        setSelectedCategory(params.get("categorySlug") || "all");
+        setSelectedLevel(params.get("level") || "all");
+        setSelectedIsFree(params.get("isFree") || "all");
+    }, [params]);
 
     return (
         <div className="flex flex-wrap gap-4 items-center justify-between border p-4 rounded-md">
@@ -73,7 +82,7 @@ const CoursesFilterBar = ({current, categories}: Props) => {
             <div className="flex items-center gap-4 flex-row flex-wrap ">
 
                 {/* Catégorie */}
-                 <Select
+                <Select
                     key={`category-${resetKey}`}
                     onValueChange={(val) => {
                         setSelectedCategory(val);

@@ -104,4 +104,16 @@ public class CompanyController {
                 ApiResponse.success(200, "Social link detached successfully", null)
         );
     }
+
+
+    @GetMapping("/company/public")
+    public CompanyDTO getCompanyPublicInfos() {
+        List<CompanyDTO> all = companyService.getAll();
+        if(all.size() == 0)
+            return null;
+
+        CompanyDTO company = all.get(0) ;
+
+        return  company;
+    }
 }

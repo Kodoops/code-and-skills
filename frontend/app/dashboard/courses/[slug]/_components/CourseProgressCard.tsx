@@ -11,6 +11,7 @@ import {useCourseProgress} from "@/hooks/use-course-progress";
 import {Progress} from "@/components/ui/progress";
 import {PlayIcon, SchoolIcon, TimerIcon} from "lucide-react";
 import {Course} from "@/models";
+import {useConstructUrl} from "@/hooks/use-construct-url";
 
 interface Props {
     data: Course
@@ -18,6 +19,7 @@ interface Props {
 
 const CourseProgressCard = ({data}:Props) => {
     const progress = useCourseProgress({ courseData: data });
+    const imageFile = useConstructUrl(data.fileKey);
 
     // const reloadProgress = useCallback(() => {
     //     progress.reload();
@@ -31,7 +33,7 @@ const CourseProgressCard = ({data}:Props) => {
                 {data.level}
             </Badge>
 
-            <Image src={data.fileKey} alt={data.title} width={600} height={400} className={"w-full rounded-t-xl aspect-video h-full object-cover"}/>
+            <Image src={imageFile} alt={data.title} width={600} height={400} className={"w-full rounded-t-xl aspect-video h-full object-cover"}/>
 
             <CardContent className={"p-4"}>
                 <Link href={`/dashboard/courses/${data.slug}`} className={"text-lg font-medium line-clamp-2 hover:underline group-hover:text-primary transition-colors"}>
